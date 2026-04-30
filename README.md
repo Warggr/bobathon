@@ -1,27 +1,29 @@
-# LifePilot - Daily Decision Assistant
+# LifePilot - Smart Task Scheduler
 
 ## Overview
 
-LifePilot is an intelligent daily planning application that helps you make better decisions about how to spend your time. It combines mood-based planning, smart task scheduling, and calendar integration to create personalized daily plans.
+LifePilot is an intelligent daily planning application that helps you make better decisions about how to spend your time. It combines mood-based task generation, priority-based scheduling, and calendar integration to create personalized daily plans with zero overlaps.
 
 ## Features
 
 ### 🎯 Core Features
-- **Mood-Based Planning**: Adjust plans based on your energy level and emotional state
-- **Goal-Oriented**: Focus on Work, Study, Health, Social, or Finance goals
-- **Smart Scheduling**: AI-powered task scheduling with conflict avoidance
-- **Calendar Integration**: Import existing calendars (ICS format)
-- **Task Manager**: Add, schedule, and track manual tasks
-- **Visual Timeline**: Beautiful timeline view of your day
+- **Mood-Based Task Generation**: Generate task suggestions based on your mood, goals, and available time
+- **Priority-Based Scheduling**: Advanced algorithm schedules tasks by priority with no overlaps
+- **Single-Day Calendar View**: Beautiful timeline showing all events for the selected day
+- **Calendar Integration**: Import existing calendars (ICS format) to avoid conflicts
+- **Unified Task Management**: Mood-based and manual tasks in one place
+- **Smart Scheduling**: All tasks scheduled for today with 15-minute breaks
 - **Data Persistence**: Tasks and settings saved in browser
 
-### ✨ New: Task Manager
-- ➕ Add tasks with name, duration, and deadline
-- 🤖 Auto-schedule tasks using smart algorithms
-- 📅 Import calendar to avoid conflicts
-- 💾 Persistent storage in localStorage
-- ✅ Track scheduled vs unscheduled tasks
-- 🎨 Visual status indicators
+### ✨ Key Features
+- 🎭 **Mood Selection**: Choose from Energetic, Tired, Stressed, or Unmotivated
+- 🎯 **Goal-Based Planning**: Focus on Study, Health, or Social goals
+- ⏱️ **Time-Based Filtering**: Tasks adjusted to your available time
+- ➕ **Manual Task Entry**: Add custom tasks with duration and deadline
+- 🤖 **Auto-Schedule**: One-click scheduling for all pending tasks
+- 📅 **Calendar Import**: Import ICS files to avoid scheduling conflicts
+- 📊 **Task Status Tracking**: See pending vs scheduled tasks
+- 🗓️ **Single-Day View**: Navigate between days to see your schedule
 
 ## Quick Start
 
@@ -34,18 +36,28 @@ python3 -m http.server 8000
 http://localhost:8000/lifepilot.html
 ```
 
-### 2. Add Your First Task
+### 2. Generate Mood-Based Tasks
+1. Select your current mood (Energetic, Tired, Stressed, Unmotivated)
+2. Choose your main goal (Study, Health, Social)
+3. Select available time (15 min, 1 hour, Half day, Full day)
+4. Click "Generate My Plan"
+5. Tasks appear in "📋 My Tasks" section
+
+### 3. Add Manual Tasks (Optional)
 1. Navigate to "Task Manager & Schedule" section
 2. Enter task details:
    - Name: "Complete project report"
    - Duration: 120 minutes
    - Deadline: Select date
 3. Click "Add Task"
+4. Task appears in "📋 My Tasks" section
 
-### 3. Schedule Tasks
-1. (Optional) Import your calendar as ICS file
+### 4. Schedule All Tasks
+1. (Optional) Import your calendar as ICS file to avoid conflicts
 2. Click "🤖 Auto-Schedule Tasks"
-3. View scheduled tasks in timeline
+3. All pending tasks scheduled for TODAY with no overlaps
+4. Tasks move to "✅ Scheduled Tasks" section
+5. View in "📅 Today's Schedule" calendar
 
 ## Documentation
 
@@ -77,56 +89,69 @@ bobathon/
 
 ## Key Components
 
-### CalendarScheduler
-- Parse ICS calendar files
-- Find free time slots
-- Schedule tasks with algorithms:
-  - First-Fit: Fast, simple scheduling
-  - Priority-Based: Considers deadlines and priorities
-- Export to ICS format
+### CalendarScheduler (`calendar-scheduler.js`)
+- **Parse ICS Files**: Import existing calendar events
+- **Find Free Slots**: Identify available time slots in the day
+- **Priority-Based Scheduling**: Advanced algorithm that:
+  - Calculates priority scores based on task priority, deadline urgency, and duration
+  - Sorts tasks by priority (high→low), deadline (early→late), duration (long→short)
+  - Schedules sequentially with overlap detection
+  - Adds 15-minute breaks between tasks
+  - Ensures all tasks fit within working hours (9 AM - 6 PM)
+- **Export to ICS**: Generate calendar files for scheduled tasks
 
-### Task Manager
-- CRUD operations for tasks
-- Input validation
-- Status tracking (pending/scheduled)
-- Integration with CalendarScheduler
-- localStorage persistence
+### Task Management System
+- **Mood-Based Generation**: Creates task suggestions based on mood/goal/time
+- **Manual Task Entry**: Add custom tasks with full control
+- **Unified Task List**: Both mood and manual tasks in one place
+- **Status Tracking**: Pending → Scheduled workflow
+- **Delete Functionality**: Remove tasks from both lists
+- **localStorage Persistence**: Tasks saved across sessions
 
 ### UI Components
-- Mood selection interface
-- Goal-based planning
-- Timeline visualization
-- Task management forms
-- Calendar import/export
+- **Mood Selection**: Interactive mood/goal/time picker
+- **Task Lists**: Separate sections for pending and scheduled tasks
+- **Single-Day Calendar**: Timeline view with navigation
+- **Auto-Schedule Button**: One-click scheduling for all tasks
+- **Calendar Import**: ICS file upload with conflict detection
 
-## Usage Examples
+## How It Works
 
-### Add a Task Programmatically
+### 1. Task Generation & Entry
 ```javascript
+// Mood-based tasks are generated
+currentPlan = [
+  { id: 'study-1', name: 'Library Study Session', time: 120, priority: 8, status: 'pending' },
+  { id: 'study-2', name: 'Practice Problems', time: 45, priority: 7, status: 'pending' }
+];
+
+// Manual tasks are added
 manualTasks.push({
   id: Date.now(),
   name: "Team Meeting",
   time: 60,
-  deadline: "2026-05-01",
+  deadline: new Date(),
   status: "pending"
 });
-saveTasks();
-renderTasksList();
 ```
 
-### Schedule Tasks
+### 2. Priority-Based Scheduling
 ```javascript
-const result = scheduler.scheduleTasksFirstFit(
-  manualTasks,
-  importedEvents,
-  new Date(),
-  7  // Look ahead 7 days
+// All pending tasks scheduled together
+const result = scheduler.scheduleTasksPriority(
+  [...currentPlan, ...manualTasks],  // All pending tasks
+  importedEvents,                     // Existing calendar events
+  new Date(),                         // Today
+  0                                   // Only schedule for today
 );
+
+// Result: { scheduled: [...], unscheduled: [...] }
 ```
 
-### Import Calendar
+### 3. Calendar Display
 ```javascript
-const events = scheduler.parseICalendar(icsContent);
+// All scheduled events shown in single-day view
+renderCalendar(); // Shows mood tasks + manual tasks + imported events
 ```
 
 ## Browser Compatibility
@@ -163,34 +188,71 @@ open http://localhost:8000/lifepilot.html
 4. Test scheduling functionality
 5. Verify localStorage persistence
 
+## Scheduling Algorithm
+
+The priority-based scheduling algorithm ensures optimal task placement:
+
+1. **Priority Calculation**
+   - Base priority from task
+   - +10 points if deadline < 1 day
+   - +5 points if deadline < 3 days
+   - +2 points if deadline < 7 days
+   - +1 point for tasks > 60 minutes
+
+2. **Task Sorting**
+   - Sort by priority score (highest first)
+   - Then by deadline (earliest first)
+   - Then by duration (longest first)
+
+3. **Sequential Scheduling**
+   - For each task in priority order:
+     - Find all available time slots
+     - Filter out slots that overlap with scheduled tasks
+     - Score remaining slots by time-of-day preferences
+     - Schedule in best available slot
+     - Add 15-minute break after task
+
+4. **Overlap Prevention**
+   - Check each candidate slot against all scheduled tasks
+   - Include break duration in overlap detection
+   - Ensure no conflicts with imported calendar events
+
 ## Troubleshooting
 
 ### Tasks Not Scheduling
-- Extend deadlines
-- Reduce task durations
-- Check working hours (9 AM - 6 PM)
-- Verify calendar import
+- **Not enough time**: Reduce task durations or remove some tasks
+- **Working hours**: Tasks only scheduled 9 AM - 6 PM
+- **Overlaps**: Check imported calendar for conflicts
+- **Today only**: All tasks scheduled for current day
+
+### Tasks Not Appearing in List
+- **Mood tasks**: Click "Generate My Plan" first
+- **Manual tasks**: Fill all required fields before adding
+- **Refresh**: Reload page if tasks don't appear
+
+### Calendar Not Updating
+- **After scheduling**: Calendar updates automatically
+- **Navigation**: Use Prev/Next buttons to change days
+- **Refresh**: Reload page if calendar doesn't update
 
 ### Data Not Persisting
-- Enable localStorage in browser
-- Disable private/incognito mode
-- Check storage quota
-
-### Import Fails
-- Verify ICS file format
-- Check file encoding (UTF-8)
-- Test with sample file
+- **localStorage**: Enable in browser settings
+- **Private mode**: Disable incognito/private browsing
+- **Storage quota**: Clear browser data if full
 
 ## Future Enhancements
 
-- [ ] Task priorities and categories
-- [ ] Recurring tasks
+- [ ] Multi-day scheduling (currently today only)
+- [ ] Recurring tasks support
+- [ ] Task categories and tags
 - [ ] Google Calendar API integration
 - [ ] Microsoft Outlook integration
-- [ ] Mobile app version
+- [ ] Mobile responsive design
 - [ ] Task dependencies
-- [ ] Team collaboration
-- [ ] Analytics dashboard
+- [ ] Team collaboration features
+- [ ] Analytics and insights dashboard
+- [ ] Custom working hours per day
+- [ ] Break duration preferences
 
 ## Contributing
 
@@ -198,15 +260,15 @@ This project was built for the IBM Hackathon. Contributions and suggestions are 
 
 ## License
 
-Part of the LifePilot project - Your Daily Decision Assistant
+Part of the LifePilot project - Smart Task Scheduling
 
 ## Credits
 
 Built with:
-- IBM-inspired Decision Intelligence
-- Vanilla JavaScript
+- Vanilla JavaScript (no frameworks)
 - iCalendar RFC 5545 standard
 - Modern browser APIs
+- Priority-based scheduling algorithms
 
 ---
 

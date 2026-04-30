@@ -1,5 +1,19 @@
 # LifePilot - Smart Task Scheduler
 
+## Team: Vibe Bobbing
+
+**Event**: Bobathon - A fast-paced hackathon hosted by IBM and Google Developer Group (GDG) On Campus Zurich at IBM Switzerland Auditorium on April 30, 2026.
+
+**Event Link**: [Bobathon Event Page](https://gdg.community.dev/events/details/google-gdg-on-campus-eth-zurich-zurich-switzerland-presents-bobathon-a-fast-paced-hack-event-ibm-x-gdgoc-zurich/)
+
+**Contributors**:
+- Pierre Ballif
+- Sapar Charyyev
+- Jun Huang
+- Sena Yalcin
+
+---
+
 ## Overview
 
 LifePilot is an intelligent daily planning application that helps you make better decisions about how to spend your time. It combines mood-based task generation, priority-based scheduling, and calendar integration to create personalized daily plans with zero overlaps.

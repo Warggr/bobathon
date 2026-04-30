@@ -86,6 +86,12 @@
     .nav-links a {
       color: inherit;
       text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--blue);
     }
 
     .nav-links a.active {
@@ -101,6 +107,12 @@
       border-radius: 14px;
       cursor: pointer;
       box-shadow: 0 12px 25px rgba(15, 98, 254, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(0.98);
     }
 
     .hero {
@@ -204,8 +216,7 @@
 
     .primary-btn:hover,
     .secondary-btn:hover,
-    .dark-btn:hover,
-    .nav-btn:hover {
+    .dark-btn:hover {
       transform: translateY(-2px);
       filter: brightness(0.98);
     }
@@ -320,7 +331,7 @@
 
     .question-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 14px;
       margin-bottom: 20px;
     }
@@ -454,6 +465,12 @@
       border-radius: 14px;
       color: var(--muted);
       font-weight: 750;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .side-menu div:hover {
+      background: rgba(255, 255, 255, 0.5);
     }
 
     .side-menu div.active {
@@ -540,137 +557,134 @@
       white-space: nowrap;
     }
 
-    .planner-grid {
-      display: grid;
-      grid-template-columns: 1fr 260px;
-      gap: 22px;
-    }
-
-    .schedule-list {
+    /* To-Do List Styles */
+    .todo-section {
       display: grid;
       gap: 12px;
     }
 
-    .schedule-block {
-      border-radius: 18px;
-      padding: 17px;
-      font-weight: 850;
+    .todo-input-container {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: grab;
-    }
-
-    .block-green { background: #defbe6; color: #0e6027; }
-    .block-purple { background: #f1e8ff; color: #5b21b6; }
-    .block-orange { background: #fff2e8; color: #a24a00; }
-    .block-blue { background: #e8f2ff; color: #0043ce; }
-
-    .drop-zone {
-      border: 2px dashed #78a9ff;
-      background: #f5f9ff;
-      color: var(--blue);
-      border-radius: 18px;
-      padding: 22px;
-      text-align: center;
-      font-weight: 850;
-    }
-
-    .activity-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .activity-card {
-      border: 1px solid var(--border);
-      background: #fbfdff;
-      padding: 13px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       gap: 10px;
+      margin-bottom: 16px;
     }
 
-    .activity-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .todo-input {
+      flex: 1;
+      padding: 14px 18px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
     }
 
-    .activity-emoji {
-      width: 38px;
-      height: 38px;
-      display: grid;
-      place-items: center;
-      background: white;
-      border-radius: 13px;
-      box-shadow: 0 4px 10px rgba(17, 24, 39, 0.05);
+    .todo-input:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(15, 98, 254, 0.1);
     }
 
-    .activity-card h4 {
-      font-size: 0.9rem;
-      margin-bottom: 3px;
-    }
-
-    .activity-card p {
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
-
-    .plus-btn {
+    .add-todo-btn {
+      padding: 14px 24px;
+      background: var(--blue);
+      color: white;
       border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .add-todo-btn:hover {
+      background: var(--blue-dark);
+      transform: translateY(-2px);
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .todo-item:hover {
+      box-shadow: 0 4px 12px rgba(17, 24, 39, 0.08);
+      transform: translateX(4px);
+    }
+
+    .todo-checkbox {
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      accent-color: var(--blue);
+    }
+
+    .todo-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .todo-text {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .todo-item.completed .todo-text {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .todo-time {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .todo-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .schedule-btn,
+    .delete-btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .schedule-btn {
       background: #edf5ff;
       color: var(--blue);
-      font-size: 1.15rem;
-      font-weight: 900;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
     }
 
-    .save-day {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 22px;
-      align-items: center;
+    .schedule-btn:hover {
+      background: var(--blue);
+      color: white;
     }
 
-    .simple-steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
+    .schedule-btn.scheduled {
+      background: var(--green);
+      color: white;
     }
 
-    .simple-card {
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 20px;
-      background: linear-gradient(135deg, #f5f9ff, white);
-      min-height: 170px;
+    .delete-btn {
+      background: #fee;
+      color: var(--red);
     }
 
-    .simple-card .num {
-      color: var(--blue);
-      font-size: 1.2rem;
-      font-weight: 950;
-      margin-bottom: 28px;
-    }
-
-    .simple-card h4 {
-      margin-bottom: 8px;
-    }
-
-    .simple-card p {
-      color: var(--muted);
-      font-size: 0.92rem;
-      line-height: 1.4;
-    }
-
-    .simple-card .emoji {
-      margin-top: 18px;
-      font-size: 2rem;
+    .delete-btn:hover {
+      background: var(--red);
+      color: white;
     }
 
     .footer {
@@ -704,15 +718,12 @@
 
     @media (max-width: 1040px) {
       .hero,
-      .grid-main,
-      .planner-grid,
-      .save-day {
+      .grid-main {
         grid-template-columns: 1fr;
       }
 
       .question-grid,
-      .metrics-grid,
-      .simple-steps {
+      .metrics-grid {
         grid-template-columns: repeat(2, 1fr);
       }
     }
@@ -740,8 +751,7 @@
       }
 
       .question-grid,
-      .metrics-grid,
-      .simple-steps {
+      .metrics-grid {
         grid-template-columns: 1fr;
       }
 
@@ -766,6 +776,10 @@
         flex-direction: column;
         align-items: flex-start;
       }
+
+      .todo-input-container {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -777,23 +791,23 @@
         <span>LifePilot</span>
       </div>
       <div class="nav-links">
-        <a href="#" class="active">Home</a>
-        <a href="#planner">Planner</a>
-        <a href="#insights">Insights</a>
-        <a href="#save-day">Save My Day</a>
+        <a href="#" class="active" onclick="scrollToSection('hero')">Home</a>
+        <a href="#planner" onclick="scrollToSection('planner')">Planner</a>
+        <a href="#todos" onclick="scrollToSection('todos')">To-Dos</a>
+        <a href="#calendar" onclick="scrollToSection('calendar')">Calendar</a>
       </div>
-      <button class="nav-btn" onclick="scrollToPlanner()">Get Started</button>
+      <button class="nav-btn" onclick="scrollToSection('planner')">Get Started</button>
     </nav>
 
-    <section class="hero">
+    <section class="hero" id="hero">
       <div class="hero-card fade-in">
         <div class="tag">✨ AI-powered daily planning</div>
         <h1>Your day.<br />Planned smarter.</h1>
         <p>
-          LifePilot helps you make better daily decisions with personalized suggestions based on your mood, time, goals and budget.
+          LifePilot helps you make better daily decisions with personalized suggestions based on your mood, time, and goals.
         </p>
         <div class="hero-actions">
-          <button class="primary-btn" onclick="scrollToPlanner()">Start Your Day</button>
+          <button class="primary-btn" onclick="scrollToSection('planner')">Start Your Day</button>
           <button class="secondary-btn" onclick="generatePlan()">▶ See Demo</button>
         </div>
       </div>
@@ -801,7 +815,7 @@
       <div class="phone-card fade-in">
         <div class="phone">
           <div class="phone-notch"></div>
-          <h3>Good morning, Ece! ☀️</h3>
+          <h3>Good morning! ☀️</h3>
           <p>Ready to plan your best day?</p>
 
           <div class="mini-card">
@@ -830,7 +844,7 @@
         <div class="section-title">
           <div>
             <h2>Tell us about your day</h2>
-            <p class="subtitle">Choose your mood, goal, available time and budget.</p>
+            <p class="subtitle">Choose your mood, goal, and available time.</p>
           </div>
         </div>
 
@@ -854,7 +868,6 @@
               <option value="Study">Study</option>
               <option value="Health">Health</option>
               <option value="Social">Social</option>
-              <option value="Finance">Finance</option>
             </select>
           </div>
 
@@ -868,22 +881,12 @@
               <option value="Full day">Full day</option>
             </select>
           </div>
-
-          <div class="question-card">
-            <h4>Budget?</h4>
-            <div class="big-icon">👛</div>
-            <select id="budget" onchange="updateSelections()">
-              <option value="Low" selected>Low</option>
-              <option value="Medium">Medium</option>
-              <option value="Flexible">Flexible</option>
-            </select>
-          </div>
         </div>
 
         <button class="primary-btn generate-btn" onclick="generatePlan()">Generate My Plan</button>
       </div>
 
-      <div class="metrics-grid fade-in" id="insights">
+      <div class="metrics-grid fade-in">
         <div class="metric-card">
           <div class="metric-top">
             <span>Life Ease Score</span>
@@ -904,11 +907,11 @@
 
         <div class="metric-card">
           <div class="metric-top">
-            <span>Budget Overview</span>
-            <span class="metric-icon">💸</span>
+            <span>Tasks Today</span>
+            <span class="metric-icon">✅</span>
           </div>
-          <div class="metric-value" id="budgetValue">₺45</div>
-          <p id="budgetText">Low-cost plan selected.</p>
+          <div class="metric-value" id="tasksValue">0</div>
+          <p id="tasksText">Add tasks to get started.</p>
         </div>
 
         <div class="metric-card">
@@ -922,7 +925,31 @@
       </div>
     </section>
 
-    <section class="section timeline-layout fade-in">
+    <section class="section fade-in" id="todos">
+      <div class="section-title">
+        <div>
+          <h2>Your To-Do List 📝</h2>
+          <p class="subtitle">Add tasks and schedule them to your calendar.</p>
+        </div>
+      </div>
+
+      <div class="todo-input-container">
+        <input 
+          type="text" 
+          id="todoInput" 
+          class="todo-input" 
+          placeholder="What do you need to do today?"
+          onkeypress="handleTodoKeyPress(event)"
+        />
+        <button class="add-todo-btn" onclick="addTodo()">+ Add Task</button>
+      </div>
+
+      <div class="todo-section" id="todoList">
+        <!-- To-do items will be added here dynamically -->
+      </div>
+    </section>
+
+    <section class="section timeline-layout fade-in" id="calendar">
       <aside class="sidebar">
         <div class="logo">
           <div class="logo-icon">✦</div>
@@ -932,7 +959,6 @@
           <div class="active">📅 Today</div>
           <div>✅ Plan</div>
           <div>🧠 Insights</div>
-          <div>💰 Budget</div>
           <div>👤 Profile</div>
           <div>⚙️ Settings</div>
         </div>
@@ -941,87 +967,12 @@
       <div class="timeline-content">
         <div class="section-title">
           <div>
-            <h2>Your Plan for Today ✨</h2>
+            <h2>Your Schedule for Today ✨</h2>
             <p class="subtitle">A personalized timeline to help you make meaningful progress.</p>
           </div>
-          <button class="primary-btn" onclick="savePlan()">Save Plan</button>
+          <button class="primary-btn" onclick="exportCalendar()">📥 Export Calendar</button>
         </div>
         <div class="timeline-list" id="timelineList"></div>
-      </div>
-    </section>
-
-    <section class="section fade-in">
-      <div class="section-title">
-        <div>
-          <h2>Customize Your Schedule</h2>
-          <p class="subtitle">Add extra activities to make the plan more personal.</p>
-        </div>
-        <button class="primary-btn" onclick="savePlan()">💾 Save</button>
-      </div>
-
-      <div class="planner-grid">
-        <div class="schedule-list" id="scheduleList">
-          <div class="schedule-block block-green">Focus Session <span>25 min</span></div>
-          <div class="schedule-block block-purple">Study <span>40 min</span></div>
-          <div class="schedule-block block-orange">Lunch Break <span>30 min</span></div>
-          <div class="schedule-block block-blue">Project Work <span>50 min</span></div>
-          <div class="drop-zone">Drop or add activity here</div>
-        </div>
-
-        <div>
-          <h3 style="margin-bottom: 14px; color: #081a3a;">Add Activities</h3>
-          <div class="activity-list">
-            <div class="activity-card">
-              <div class="activity-left"><div class="activity-emoji">🚶</div><div><h4>Short Walk</h4><p>15 min</p></div></div>
-              <button class="plus-btn" onclick="addActivity('Short Walk', '15 min', '🚶')">+</button>
-            </div>
-            <div class="activity-card">
-              <div class="activity-left"><div class="activity-emoji">🧘</div><div><h4>Meditation</h4><p>10 min</p></div></div>
-              <button class="plus-btn" onclick="addActivity('Meditation', '10 min', '🧘')">+</button>
-            </div>
-            <div class="activity-card">
-              <div class="activity-left"><div class="activity-emoji">📚</div><div><h4>Read Something</h4><p>20 min</p></div></div>
-              <button class="plus-btn" onclick="addActivity('Read Something', '20 min', '📚')">+</button>
-            </div>
-            <div class="activity-card">
-              <div class="activity-left"><div class="activity-emoji">☎️</div><div><h4>Call a Friend</h4><p>15 min</p></div></div>
-              <button class="plus-btn" onclick="addActivity('Call a Friend', '15 min', '☎️')">+</button>
-            </div>
-            <div class="activity-card">
-              <div class="activity-left"><div class="activity-emoji">🗓️</div><div><h4>Plan Tomorrow</h4><p>10 min</p></div></div>
-              <button class="plus-btn" onclick="addActivity('Plan Tomorrow', '10 min', '🗓️')">+</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section save-day fade-in" id="save-day">
-      <div>
-        <h2>Having a tough day?</h2>
-        <p class="subtitle">LifePilot can simplify your day into only three small actions.</p>
-        <br />
-        <button class="dark-btn" onclick="saveMyDay()">Save My Day</button>
-      </div>
-      <div class="simple-steps" id="simpleSteps">
-        <div class="simple-card">
-          <div class="num">1</div>
-          <h4>Drink Water</h4>
-          <p>Stay hydrated and reset your body.</p>
-          <div class="emoji">💧</div>
-        </div>
-        <div class="simple-card">
-          <div class="num">2</div>
-          <h4>Do One Easy Task</h4>
-          <p>Small win, big impact.</p>
-          <div class="emoji">✅</div>
-        </div>
-        <div class="simple-card">
-          <div class="num">3</div>
-          <h4>Take a 5-Minute Break</h4>
-          <p>Breathe and reset your mind.</p>
-          <div class="emoji">🌿</div>
-        </div>
       </div>
     </section>
 
@@ -1033,8 +984,12 @@
     </footer>
   </div>
 
+  <script src="calendar-scheduler.js"></script>
   <script>
     let currentPlan = [];
+    let todos = [];
+    let todoIdCounter = 1;
+    const scheduler = new CalendarScheduler();
 
     const moodIcons = {
       Energetic: "⚡",
@@ -1047,55 +1002,54 @@
       Work: "💼",
       Study: "📚",
       Health: "❤️",
-      Social: "👥",
-      Finance: "💰"
+      Social: "👥"
     };
 
     const plans = {
       Work: [
-        { time: "09:00", title: "Reset Your Mind", desc: "10 min breathing exercise", emoji: "🌿", duration: "10 min" },
-        { time: "09:15", title: "Focus Session", desc: "Finish one important work task", emoji: "🎯", duration: "25 min" },
-        { time: "09:45", title: "Quick Break", desc: "Take a short walk", emoji: "🚶", duration: "15 min" },
-        { time: "10:00", title: "Low-Budget Meal", desc: "Simple and healthy lunch idea", emoji: "🥗", duration: "30 min" },
-        { time: "10:30", title: "Review Progress", desc: "Check what is done and what can wait", emoji: "✅", duration: "15 min" }
+        { time: "09:00", title: "Reset Your Mind", desc: "10 min breathing exercise", emoji: "🌿", duration: 10 },
+        { time: "09:15", title: "Focus Session", desc: "Finish one important work task", emoji: "🎯", duration: 25 },
+        { time: "09:45", title: "Quick Break", desc: "Take a short walk", emoji: "🚶", duration: 15 },
+        { time: "10:00", title: "Project Work", desc: "Continue with main project", emoji: "💼", duration: 30 },
+        { time: "10:30", title: "Review Progress", desc: "Check what is done and what can wait", emoji: "✅", duration: 15 }
       ],
       Study: [
-        { time: "09:00", title: "Warm-up Review", desc: "Read your notes for 10 minutes", emoji: "📖", duration: "10 min" },
-        { time: "09:15", title: "Deep Study Block", desc: "Focus on one difficult topic", emoji: "🧠", duration: "30 min" },
-        { time: "09:50", title: "Mini Quiz", desc: "Test yourself with 5 questions", emoji: "❓", duration: "15 min" },
-        { time: "10:10", title: "Break", desc: "Move away from the screen", emoji: "🚶", duration: "10 min" },
-        { time: "10:25", title: "Summary", desc: "Write three key takeaways", emoji: "✍️", duration: "15 min" }
+        { time: "09:00", title: "Warm-up Review", desc: "Read your notes for 10 minutes", emoji: "📖", duration: 10 },
+        { time: "09:15", title: "Deep Study Block", desc: "Focus on one difficult topic", emoji: "🧠", duration: 30 },
+        { time: "09:50", title: "Mini Quiz", desc: "Test yourself with 5 questions", emoji: "❓", duration: 15 },
+        { time: "10:10", title: "Break", desc: "Move away from the screen", emoji: "🚶", duration: 10 },
+        { time: "10:25", title: "Summary", desc: "Write three key takeaways", emoji: "✍️", duration: 15 }
       ],
       Health: [
-        { time: "09:00", title: "Hydration", desc: "Drink water and stretch", emoji: "💧", duration: "10 min" },
-        { time: "09:15", title: "Light Movement", desc: "Walk or do a short workout", emoji: "🏃", duration: "25 min" },
-        { time: "09:45", title: "Healthy Meal", desc: "Choose a simple balanced meal", emoji: "🥗", duration: "30 min" },
-        { time: "10:20", title: "Mental Reset", desc: "Five minutes of calm breathing", emoji: "🧘", duration: "5 min" }
+        { time: "09:00", title: "Hydration", desc: "Drink water and stretch", emoji: "💧", duration: 10 },
+        { time: "09:15", title: "Light Movement", desc: "Walk or do a short workout", emoji: "🏃", duration: 25 },
+        { time: "09:45", title: "Healthy Meal", desc: "Choose a simple balanced meal", emoji: "🥗", duration: 30 },
+        { time: "10:20", title: "Mental Reset", desc: "Five minutes of calm breathing", emoji: "🧘", duration: 5 }
       ],
       Social: [
-        { time: "09:00", title: "Check In", desc: "Message one person you care about", emoji: "💬", duration: "10 min" },
-        { time: "09:15", title: "Plan a Small Meet", desc: "Choose a low-pressure social activity", emoji: "👥", duration: "20 min" },
-        { time: "09:40", title: "Personal Time", desc: "Recharge before social interaction", emoji: "🌿", duration: "15 min" },
-        { time: "10:00", title: "Connect", desc: "Call, meet or send a thoughtful message", emoji: "☎️", duration: "20 min" }
-      ],
-      Finance: [
-        { time: "09:00", title: "Budget Check", desc: "Review today's spending limit", emoji: "💰", duration: "10 min" },
-        { time: "09:15", title: "Smart Choice", desc: "Pick one low-cost option for today", emoji: "🛒", duration: "15 min" },
-        { time: "09:35", title: "Avoid Waste", desc: "Use what you already have", emoji: "♻️", duration: "20 min" },
-        { time: "10:00", title: "Save Small", desc: "Set aside a tiny amount", emoji: "🏦", duration: "5 min" }
+        { time: "09:00", title: "Check In", desc: "Message one person you care about", emoji: "💬", duration: 10 },
+        { time: "09:15", title: "Plan a Small Meet", desc: "Choose a low-pressure social activity", emoji: "👥", duration: 20 },
+        { time: "09:40", title: "Personal Time", desc: "Recharge before social interaction", emoji: "🌿", duration: 15 },
+        { time: "10:00", title: "Connect", desc: "Call, meet or send a thoughtful message", emoji: "☎️", duration: 20 }
       ]
     };
 
     document.addEventListener("DOMContentLoaded", function () {
       updateSelections();
       generatePlan();
+      loadTodos();
     });
+
+    function scrollToSection(sectionId) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
 
     function updateSelections() {
       const mood = document.getElementById("mood").value;
       const goal = document.getElementById("goal").value;
-      const time = document.getElementById("time").value;
-      const budget = document.getElementById("budget").value;
 
       document.getElementById("moodIcon").textContent = moodIcons[mood];
       document.getElementById("goalIcon").textContent = goalIcons[goal];
@@ -1105,13 +1059,12 @@
       if (goal === "Study") focusText = "Understand one hard topic";
       if (goal === "Health") focusText = "Protect your energy";
       if (goal === "Social") focusText = "Connect with someone";
-      if (goal === "Finance") focusText = "Spend smarter today";
       document.getElementById("phoneFocus").textContent = focusText;
 
-      updateMetrics(mood, goal, time, budget);
+      updateMetrics(mood, goal);
     }
 
-    function updateMetrics(mood, goal, time, budget) {
+    function updateMetrics(mood, goal) {
       let score = 82;
       let energy = "Medium";
       let insightTitle = "Light plan";
@@ -1134,21 +1087,9 @@
         insightText = "The best strategy is to start with one very easy task.";
       }
 
-      let budgetAmount = "₺45";
-      let budgetText = "Low-cost plan selected.";
-      if (budget === "Medium") {
-        budgetAmount = "₺120";
-        budgetText = "Balanced spending plan selected.";
-      } else if (budget === "Flexible") {
-        budgetAmount = "₺250";
-        budgetText = "Flexible plan with more options.";
-      }
-
       document.getElementById("scoreValue").textContent = score + "/100";
       document.getElementById("phoneScore").textContent = score;
       document.getElementById("energyValue").textContent = energy;
-      document.getElementById("budgetValue").textContent = budgetAmount;
-      document.getElementById("budgetText").textContent = budgetText;
       document.getElementById("insightTitle").textContent = insightTitle;
       document.getElementById("insightText").textContent = insightText;
 
@@ -1159,13 +1100,14 @@
       } else {
         document.getElementById("scoreText").textContent = "Keep it simple and gentle today.";
       }
+
+      updateTasksMetric();
     }
 
     function generatePlan() {
       const goal = document.getElementById("goal").value;
       const mood = document.getElementById("mood").value;
       const time = document.getElementById("time").value;
-      const budget = document.getElementById("budget").value;
 
       currentPlan = [...plans[goal]];
 
@@ -1175,7 +1117,7 @@
           title: "Gentle Start",
           desc: "Drink water and do one tiny action",
           emoji: "💧",
-          duration: "5 min"
+          duration: 5
         });
       }
 
@@ -1183,16 +1125,6 @@
         currentPlan = currentPlan.slice(0, 2);
       } else if (time === "1 hour") {
         currentPlan = currentPlan.slice(0, 4);
-      }
-
-      if (budget === "Low" && goal !== "Finance") {
-        currentPlan.push({
-          time: "12:00",
-          title: "Low-Budget Choice",
-          desc: "Use what you already have before spending money",
-          emoji: "💸",
-          duration: "10 min"
-        });
       }
 
       renderTimeline();
@@ -1213,40 +1145,210 @@
                   <p>${item.desc}</p>
                 </div>
               </div>
-              <span class="duration">${item.duration}</span>
+              <span class="duration">${item.duration} min</span>
             </div>
           </div>
         `;
       }).join("");
     }
 
-    function addActivity(title, time, emoji) {
-      const scheduleList = document.getElementById("scheduleList");
-      const dropZone = scheduleList.querySelector(".drop-zone");
-      const newBlock = document.createElement("div");
-      newBlock.className = "schedule-block block-blue";
-      newBlock.innerHTML = `${emoji} ${title} <span>${time}</span>`;
-      scheduleList.insertBefore(newBlock, dropZone);
+    // To-Do List Functions
+    function handleTodoKeyPress(event) {
+      if (event.key === 'Enter') {
+        addTodo();
+      }
     }
 
-    function saveMyDay() {
-      currentPlan = [
-        { time: "Now", title: "Drink Water", desc: "Hydrate and reset your body", emoji: "💧", duration: "2 min" },
-        { time: "+5", title: "Do One Easy Task", desc: "Choose the easiest useful action", emoji: "✅", duration: "10 min" },
-        { time: "+20", title: "Take a 5-Minute Break", desc: "Breathe and relax your shoulders", emoji: "🌿", duration: "5 min" }
-      ];
-      renderTimeline();
-      document.querySelector(".timeline-layout").scrollIntoView({ behavior: "smooth" });
+    function addTodo() {
+      const input = document.getElementById("todoInput");
+      const text = input.value.trim();
+      
+      if (text === "") return;
+
+      const todo = {
+        id: todoIdCounter++,
+        text: text,
+        completed: false,
+        scheduled: false,
+        createdAt: new Date().toISOString()
+      };
+
+      todos.push(todo);
+      input.value = "";
+      saveTodos();
+      renderTodos();
+      updateTasksMetric();
     }
 
-    function savePlan() {
-      alert("Your LifePilot plan has been saved! ✅");
+    function toggleTodo(id) {
+      const todo = todos.find(t => t.id === id);
+      if (todo) {
+        todo.completed = !todo.completed;
+        saveTodos();
+        renderTodos();
+        updateTasksMetric();
+      }
     }
 
-    function scrollToPlanner() {
-      document.getElementById("planner").scrollIntoView({ behavior: "smooth" });
+    function deleteTodo(id) {
+      todos = todos.filter(t => t.id !== id);
+      saveTodos();
+      renderTodos();
+      updateTasksMetric();
+    }
+
+    function scheduleTodo(id) {
+      const todo = todos.find(t => t.id === id);
+      if (!todo) return;
+
+      // Create a task object for the scheduler
+      const task = {
+        id: todo.id,
+        name: todo.text,
+        time: 30, // Default 30 minutes
+        priority: 5
+      };
+
+      // Get existing calendar events from currentPlan
+      const existingEvents = currentPlan.map(item => {
+        const [hours, minutes] = item.time.split(':');
+        const start = new Date();
+        start.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        const end = new Date(start);
+        end.setMinutes(end.getMinutes() + item.duration);
+        
+        return {
+          start: start,
+          end: end,
+          summary: item.title
+        };
+      });
+
+      // Schedule the task
+      const result = scheduler.scheduleTasksFirstFit([task], existingEvents);
+      
+      if (result.scheduled.length > 0) {
+        const scheduledTask = result.scheduled[0];
+        const timeStr = scheduledTask.scheduledStart.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: false 
+        });
+
+        // Add to current plan
+        currentPlan.push({
+          time: timeStr,
+          title: todo.text,
+          desc: "Scheduled task",
+          emoji: "✅",
+          duration: task.time
+        });
+
+        // Sort by time
+        currentPlan.sort((a, b) => a.time.localeCompare(b.time));
+
+        todo.scheduled = true;
+        saveTodos();
+        renderTodos();
+        renderTimeline();
+        
+        alert(`Task scheduled at ${timeStr}!`);
+      } else {
+        alert("Could not find a suitable time slot. Try adjusting your schedule.");
+      }
+    }
+
+    function renderTodos() {
+      const todoList = document.getElementById("todoList");
+      
+      if (todos.length === 0) {
+        todoList.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 20px;">No tasks yet. Add your first task above!</p>';
+        return;
+      }
+
+      todoList.innerHTML = todos.map(todo => `
+        <div class="todo-item ${todo.completed ? 'completed' : ''}">
+          <input 
+            type="checkbox" 
+            class="todo-checkbox" 
+            ${todo.completed ? 'checked' : ''}
+            onchange="toggleTodo(${todo.id})"
+          />
+          <div class="todo-content">
+            <div class="todo-text">${todo.text}</div>
+            <div class="todo-time">Added ${new Date(todo.createdAt).toLocaleString()}</div>
+          </div>
+          <div class="todo-actions">
+            <button 
+              class="schedule-btn ${todo.scheduled ? 'scheduled' : ''}" 
+              onclick="scheduleTodo(${todo.id})"
+              ${todo.completed || todo.scheduled ? 'disabled' : ''}
+            >
+              ${todo.scheduled ? '✓ Scheduled' : '📅 Schedule'}
+            </button>
+            <button class="delete-btn" onclick="deleteTodo(${todo.id})">🗑️</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function saveTodos() {
+      localStorage.setItem('lifepilot-todos', JSON.stringify(todos));
+    }
+
+    function loadTodos() {
+      const saved = localStorage.getItem('lifepilot-todos');
+      if (saved) {
+        todos = JSON.parse(saved);
+        todoIdCounter = Math.max(...todos.map(t => t.id), 0) + 1;
+        renderTodos();
+      }
+    }
+
+    function updateTasksMetric() {
+      const totalTasks = todos.length;
+      const completedTasks = todos.filter(t => t.completed).length;
+      
+      document.getElementById("tasksValue").textContent = `${completedTasks}/${totalTasks}`;
+      
+      if (totalTasks === 0) {
+        document.getElementById("tasksText").textContent = "Add tasks to get started.";
+      } else if (completedTasks === totalTasks) {
+        document.getElementById("tasksText").textContent = "All tasks completed! 🎉";
+      } else {
+        document.getElementById("tasksText").textContent = `${totalTasks - completedTasks} tasks remaining.`;
+      }
+    }
+
+    function exportCalendar() {
+      if (currentPlan.length === 0) {
+        alert("No schedule to export. Generate a plan first!");
+        return;
+      }
+
+      // Convert current plan to scheduled tasks format
+      const scheduledTasks = currentPlan.map((item, index) => {
+        const [hours, minutes] = item.time.split(':');
+        const start = new Date();
+        start.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        const end = new Date(start);
+        end.setMinutes(end.getMinutes() + item.duration);
+
+        return {
+          id: index,
+          name: item.title,
+          description: item.desc,
+          scheduledStart: start,
+          scheduledEnd: end,
+          uid: `lifepilot-${index}-${Date.now()}`
+        };
+      });
+
+      const icsContent = scheduler.exportToICalendar(scheduledTasks);
+      scheduler.downloadICS(icsContent, 'lifepilot-schedule.ics');
+      
+      alert("Calendar exported successfully! 📅");
     }
   </script>
 </body>
 </html>
- 

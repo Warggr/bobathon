@@ -587,6 +587,7 @@
             margin-bottom: 10px;
         }
     </style>
+    <script src="calendar-scheduler.js"></script>
 </head>
 <body>
     <div class="container">
@@ -645,6 +646,21 @@
                     <button onclick="changeWeek(1)">Next →</button>
                 </div>
             </div>
+            
+            <!-- Calendar Controls -->
+            <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; padding: 0 15px;">
+                <button class="btn-small" onclick="importCalendar()" style="background: #2196f3; color: white; flex: 1;">
+                    📥 Import ICS
+                </button>
+                <button class="btn-small" onclick="scheduleAllTasks()" style="background: #4caf50; color: white; flex: 1;">
+                    🤖 Auto-Schedule
+                </button>
+                <button class="btn-small" onclick="exportCalendar()" style="background: #ff9800; color: white; flex: 1;">
+                    📤 Export ICS
+                </button>
+            </div>
+            <input type="file" id="icsFileInput" accept=".ics" style="display: none;" onchange="handleICSImport(event)">
+            
             <div class="calendar-weekdays">
                 <div class="calendar-weekday">Monday</div>
                 <div class="calendar-weekday">Tuesday</div>
@@ -672,6 +688,8 @@
         let tasks = JSON.parse(localStorage.getItem('lifepilot_tasks')) || [];
         let editingTaskId = null;
         let currentWeekOffset = 0;
+        let calendarEvents = JSON.parse(localStorage.getItem('lifepilot_calendar_events')) || [];
+        let scheduler = new CalendarScheduler();
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -887,33 +905,71 @@
             actualToday.setHours(0, 0, 0, 0);
             const todayStr = actualToday.toISOString().split('T')[0];
 
+            // Combine tasks with scheduled times and calendar events
+            const allEvents = [...calendarEvents];
+            
+            // Add tasks with scheduled times
+            tasks.forEach(task => {
+                if (task.scheduledStart && task.scheduledEnd) {
+                    allEvents.push({
+                        summary: task.name,
+                        start: new Date(task.scheduledStart),
+                        end: new Date(task.scheduledEnd),
+                        taskId: task.id,
+                        isTask: true
+                    });
+                }
+            });
+
             // Render calendar days
             calendar.innerHTML = weekDates.map((date, index) => {
                 const dateStr = date.toISOString().split('T')[0];
-                const dayTasks = tasks.filter(t => t.deadline === dateStr);
+                
+                // Get tasks for this day (both deadline-based and scheduled)
+                const dayTasks = tasks.filter(t => {
+                    if (t.scheduledStart) {
+                        const scheduledDate = new Date(t.scheduledStart).toISOString().split('T')[0];
+                        return scheduledDate === dateStr;
+                    }
+                    return t.deadline === dateStr;
+                });
+                
+                // Get calendar events for this day
+                const dayEvents = allEvents.filter(event => {
+                    const eventDate = new Date(event.start).toISOString().split('T')[0];
+                    return eventDate === dateStr;
+                }).sort((a, b) => new Date(a.start) - new Date(b.start));
+                
                 const isToday = dateStr === todayStr;
-                const hasTasks = dayTasks.length > 0;
+                const hasTasks = dayEvents.length > 0;
                 
                 return `
                     <div class="calendar-day ${isToday ? 'today' : ''} ${hasTasks ? 'has-tasks' : ''}">
-                        ${hasTasks ? `<div class="task-count-badge">${dayTasks.length}</div>` : ''}
+                        ${hasTasks ? `<div class="task-count-badge">${dayEvents.length}</div>` : ''}
                         <div class="calendar-day-header">
                             ${days[index]}<br>
                             ${date.getDate()}/${date.getMonth() + 1}
                         </div>
-                        ${dayTasks.map(task => `
-                            <div class="calendar-task" onclick="editTask(${task.id})">
-                                <div class="calendar-task-name">${task.name}</div>
-                                <div class="calendar-task-time">⏱️ ${task.time} min</div>
-                            </div>
-                        `).join('')}
+                        ${dayEvents.map(event => {
+                            const startTime = new Date(event.start).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                            const endTime = new Date(event.end).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                            const isTaskEvent = event.isTask;
+                            
+                            return `
+                                <div class="calendar-task" onclick="${isTaskEvent ? `editTask(${event.taskId})` : ''}"
+                                     style="${!isTaskEvent ? 'background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); cursor: default;' : ''}">
+                                    <div class="calendar-task-name">${event.summary || event.name}</div>
+                                    <div class="calendar-task-time">${startTime} - ${endTime}</div>
+                                </div>
+                            `;
+                        }).join('')}
                         ${!hasTasks ? '<div style="text-align: center; color: #999; margin-top: 20px; font-size: 0.9em;">No tasks</div>' : ''}
                     </div>
                 `;
             }).join('');
 
             // Render unscheduled tasks
-            const unscheduledTasks = tasks.filter(t => !t.deadline);
+            const unscheduledTasks = tasks.filter(t => !t.deadline && !t.scheduledStart);
             if (unscheduledTasks.length > 0) {
                 unscheduledSection.style.display = 'block';
                 unscheduledList.innerHTML = unscheduledTasks.map(task => `
@@ -924,6 +980,91 @@
             } else {
                 unscheduledSection.style.display = 'none';
             }
+        }
+
+        // Calendar import/export functions
+        function importCalendar() {
+            document.getElementById('icsFileInput').click();
+        }
+
+        function handleICSImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const icsContent = e.target.result;
+                    const events = scheduler.parseICalendar(icsContent);
+                    
+                    // Merge with existing events
+                    calendarEvents = [...calendarEvents, ...events];
+                    localStorage.setItem('lifepilot_calendar_events', JSON.stringify(calendarEvents));
+                    
+                    renderCalendar();
+                    alert(`Successfully imported ${events.length} event(s)!`);
+                } catch (error) {
+                    alert('Error importing calendar: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input
+            event.target.value = '';
+        }
+
+        function scheduleAllTasks() {
+            if (tasks.length === 0) {
+                alert('No tasks to schedule! Add some tasks first.');
+                return;
+            }
+
+            // Ask user for scheduling preferences
+            const useSmartScheduling = confirm('Use smart priority-based scheduling?\n\nClick OK for smart scheduling (considers priorities and deadlines)\nClick Cancel for simple first-fit scheduling');
+
+            const today = new Date();
+            const result = useSmartScheduling
+                ? scheduler.scheduleTasksPriority(tasks, calendarEvents, today, 7)
+                : scheduler.scheduleTasksFirstFit(tasks, calendarEvents, today, 7);
+
+            // Update tasks with scheduled times
+            result.scheduled.forEach(scheduledTask => {
+                const taskIndex = tasks.findIndex(t => t.id === scheduledTask.id);
+                if (taskIndex !== -1) {
+                    tasks[taskIndex].scheduledStart = scheduledTask.scheduledStart;
+                    tasks[taskIndex].scheduledEnd = scheduledTask.scheduledEnd;
+                }
+            });
+
+            saveTasks();
+            renderCalendar();
+            updateDashboard();
+
+            // Show results
+            const message = `Scheduling complete!\n\n✅ Scheduled: ${result.scheduled.length} task(s)\n❌ Unscheduled: ${result.unscheduled.length} task(s)`;
+            
+            if (result.unscheduled.length > 0) {
+                const unscheduledNames = result.unscheduled.map(t => `• ${t.name} (${t.time} min)`).join('\n');
+                alert(message + '\n\nUnscheduled tasks:\n' + unscheduledNames + '\n\nTip: Try extending the deadline or reducing task duration.');
+            } else {
+                alert(message);
+            }
+        }
+
+        function exportCalendar() {
+            // Get all scheduled tasks
+            const scheduledTasks = tasks.filter(t => t.scheduledStart && t.scheduledEnd);
+            
+            if (scheduledTasks.length === 0) {
+                alert('No scheduled tasks to export! Use Auto-Schedule first.');
+                return;
+            }
+
+            // Export to ICS format
+            const icsContent = scheduler.exportToICalendar(scheduledTasks);
+            scheduler.downloadICS(icsContent, 'lifepilot-schedule.ics');
+            
+            alert(`Exported ${scheduledTasks.length} scheduled task(s) to ICS file!`);
         }
 
         function formatDate(dateStr) {

@@ -679,12 +679,12 @@
         return;
       }
 
-      // Use the scheduler algorithm
+      // Use the improved priority-based scheduler algorithm (schedules for today only)
       const result = scheduler.scheduleTasksPriority(
         unscheduledTasks,
         scheduledEvents,
-        new Date(),
-        30 // Look ahead 30 days
+        currentDate, // Use current date (today)
+        0 // Only schedule for today (0 days ahead)
       );
 
       if (result.scheduled.length > 0) {
@@ -707,13 +707,13 @@
           if (task) task.scheduled = true;
         });
 
-        alert(`✅ Successfully scheduled ${result.scheduled.length} task(s)!`);
+        alert(`✅ Successfully scheduled ${result.scheduled.length} task(s) for today with no overlaps!`);
         
         if (result.unscheduled.length > 0) {
-          alert(`⚠️ Could not schedule ${result.unscheduled.length} task(s). Try adjusting deadlines or durations.`);
+          alert(`⚠️ Could not schedule ${result.unscheduled.length} task(s). Not enough time available today.`);
         }
       } else {
-        alert('❌ Could not schedule any tasks. Try adjusting deadlines or adding more available time.');
+        alert('❌ Could not schedule any tasks. Not enough free time available today.');
       }
 
       renderTaskList();
@@ -817,20 +817,18 @@
       scheduledEvents = [];
       taskIdCounter = 1;
       
-      // Add sample tasks
+      // All sample tasks use today as deadline (for demo purposes)
       const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const nextWeek = new Date(today);
-      nextWeek.setDate(nextWeek.getDate() + 7);
+      const todayDeadline = new Date(today.toDateString() + ' 23:59:59');
       
       const sampleTasks = [
-        { name: 'Team Meeting Prep', time: 30, deadline: tomorrow, priority: 8 },
-        { name: 'Write Project Report', time: 120, deadline: nextWeek, priority: 10 },
-        { name: 'Code Review', time: 45, deadline: tomorrow, priority: 5 },
-        { name: 'Client Email Response', time: 20, deadline: tomorrow, priority: 8 },
-        { name: 'Update Documentation', time: 60, deadline: nextWeek, priority: 5 },
-        { name: 'Bug Fixes', time: 90, deadline: nextWeek, priority: 8 }
+        { name: 'Team Meeting Prep', time: 30, priority: 8 },
+        { name: 'Write Project Report', time: 90, priority: 10 },
+        { name: 'Code Review', time: 45, priority: 5 },
+        { name: 'Client Email Response', time: 20, priority: 8 },
+        { name: 'Update Documentation', time: 60, priority: 5 },
+        { name: 'Bug Fixes', time: 75, priority: 8 },
+        { name: 'Design Review', time: 45, priority: 6 }
       ];
       
       sampleTasks.forEach(task => {
@@ -838,7 +836,7 @@
           id: taskIdCounter++,
           name: task.name,
           time: task.time,
-          deadline: new Date(task.deadline.toDateString() + ' 23:59:59'),
+          deadline: todayDeadline,
           priority: task.priority,
           scheduled: false
         });
@@ -847,7 +845,7 @@
       renderTaskList();
       updateStats();
       
-      alert('✅ Sample tasks loaded! Click "Auto-Schedule All Tasks" to see the magic happen.');
+      alert('✅ Sample tasks loaded! All tasks will be scheduled for TODAY with no overlaps. Click "Auto-Schedule All Tasks" to see the magic happen.');
     }
   </script>
 </body>

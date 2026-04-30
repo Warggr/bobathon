@@ -322,6 +322,45 @@
     let importedEvents = [];
     let scheduler = new CalendarScheduler();
     scheduler.setWorkingHours(8, 22); // 8 AM to 10 PM for more flexibility
+    
+    // Load tasks and events from localStorage on page load
+    function loadFromLocalStorage() {
+      try {
+        const storedTasks = localStorage.getItem('lifepilot_tasks');
+        const storedEvents = localStorage.getItem('lifepilot_events');
+        
+        if (storedTasks) {
+          const tasks = JSON.parse(storedTasks);
+          // Convert deadline strings back to Date objects
+          manualTasks = tasks.map(task => ({
+            ...task,
+            deadline: task.deadline ? new Date(task.deadline) : undefined
+          }));
+          console.log(`Loaded ${manualTasks.length} tasks from localStorage`);
+        }
+        
+        if (storedEvents) {
+          const events = JSON.parse(storedEvents);
+          // Convert date strings back to Date objects
+          importedEvents = events.map(event => ({
+            ...event,
+            start: new Date(event.start),
+            end: new Date(event.end)
+          }));
+          console.log(`Loaded ${importedEvents.length} events from localStorage`);
+        }
+        
+        // Update UI if we have imported data
+        if (importedEvents.length > 0) {
+          const statusDiv = document.getElementById('importStatus');
+          if (statusDiv) {
+            statusDiv.innerHTML = `<span style="color: #24a148;">✅ Loaded ${importedEvents.length} events from storage</span>`;
+          }
+        }
+      } catch (error) {
+        console.error('Error loading from localStorage:', error);
+      }
+    }
 
     const moodIcons = {
       Energetic: "⚡",
@@ -363,6 +402,9 @@
     };
 
     document.addEventListener("DOMContentLoaded", function () {
+      // Load data from localStorage first
+      loadFromLocalStorage();
+      
       updateSelections();
       generatePlan();
     });
@@ -436,8 +478,18 @@
       const mood = document.getElementById("mood").value;
       const time = document.getElementById("time").value;
 
-      // Get task suggestions for the selected goal
-      const tasks = taskSuggestions[goal] || [];
+      let tasks = [];
+      
+      // Use tasks from localStorage if available, otherwise use suggestions
+      if (manualTasks.length > 0) {
+        // Use imported/stored tasks
+        tasks = [...manualTasks];
+        console.log(`Using ${tasks.length} tasks from storage`);
+      } else {
+        // Get task suggestions for the selected goal
+        tasks = taskSuggestions[goal] || [];
+        console.log(`Using ${tasks.length} suggested tasks for ${goal}`);
+      }
       
       // Filter tasks based on available time
       let filteredTasks = [...tasks];
@@ -454,7 +506,7 @@
       
       // Adjust priority based on mood
       filteredTasks = filteredTasks.map(task => {
-        let adjustedPriority = task.priority;
+        let adjustedPriority = task.priority || 5; // Default priority if not set
         if (mood === "Tired" || mood === "Unmotivated") {
           // Prefer shorter, easier tasks
           if (task.time <= 30) adjustedPriority += 2;

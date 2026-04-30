@@ -216,8 +216,8 @@ class CalendarScheduler {
     }
 
     /**
-     * Priority-based scheduling algorithm
-     * Considers task priority, deadline urgency, and optimal time of day
+     * Priority-based scheduling algorithm with optimal time distribution
+     * Considers task priority, deadline urgency, optimal time of day, and realistic scheduling
      * @param {Array} tasks - Array of tasks with priority field
      * @param {Array} existingEvents - Array of existing calendar events
      * @param {Date} startDate - Start date for scheduling
@@ -228,7 +228,7 @@ class CalendarScheduler {
         const scheduled = [];
         const unscheduled = [];
 
-        // Calculate priority scores
+        // Calculate priority scores and optimal scheduling times
         const tasksWithScores = tasks.map(task => {
             let score = task.priority || 5; // Default priority
 
@@ -246,11 +246,218 @@ class CalendarScheduler {
             return { ...task, priorityScore: score };
         });
 
-        // Sort by priority score (highest first)
-        const sortedTasks = tasksWithScores.sort((a, b) => b.priorityScore - a.priorityScore);
+        // Sort by priority score (highest first), then by deadline
+        const sortedTasks = tasksWithScores.sort((a, b) => {
+            if (b.priorityScore !== a.priorityScore) {
+                return b.priorityScore - a.priorityScore;
+            }
+            // If same priority, schedule tasks with earlier deadlines first
+            if (a.deadline && b.deadline) {
+                return new Date(a.deadline) - new Date(b.deadline);
+            }
+            return 0;
+        });
 
-        // Use first-fit algorithm with sorted tasks
-        return this.scheduleTasksFirstFit(sortedTasks, existingEvents, startDate, daysAhead);
+        // Schedule tasks with improved algorithm
+        for (const task of sortedTasks) {
+            const scheduled_task = this.scheduleTaskOptimal(
+                task,
+                [...existingEvents, ...scheduled],
+                startDate,
+                daysAhead
+            );
+
+            if (scheduled_task) {
+                scheduled.push(scheduled_task);
+            } else {
+                unscheduled.push(task);
+            }
+        }
+
+        return { scheduled, unscheduled };
+    }
+
+    /**
+     * Schedule a single task optimally considering time of day and deadline
+     * @param {Object} task - Task to schedule
+     * @param {Array} existingEvents - Array of existing events
+     * @param {Date} startDate - Start date for scheduling
+     * @param {number} daysAhead - Number of days to look ahead
+     * @returns {Object|null} Scheduled task or null if cannot schedule
+     */
+    scheduleTaskOptimal(task, existingEvents, startDate, daysAhead) {
+        const taskDuration = task.time; // in minutes
+        
+        // Determine the date range to search
+        const searchStartDate = new Date(startDate);
+        const searchEndDate = task.deadline ? new Date(task.deadline) : new Date(startDate);
+        if (!task.deadline) {
+            searchEndDate.setDate(searchEndDate.getDate() + daysAhead);
+        }
+
+        // Build a list of candidate slots across all days
+        const candidateSlots = [];
+
+        for (let d = new Date(searchStartDate); d <= searchEndDate; d.setDate(d.getDate() + 1)) {
+            const freeSlots = this.findFreeSlots(d, existingEvents);
+
+            for (const slot of freeSlots) {
+                const slotDuration = (slot.end - slot.start) / (1000 * 60); // in minutes
+
+                if (slotDuration >= taskDuration + this.breakDuration) {
+                    // Calculate all possible start times within this slot
+                    const possibleStarts = this.generateOptimalStartTimes(
+                        slot,
+                        taskDuration,
+                        task
+                    );
+
+                    candidateSlots.push(...possibleStarts);
+                }
+            }
+        }
+
+        if (candidateSlots.length === 0) {
+            return null;
+        }
+
+        // Score each candidate slot and pick the best one
+        const scoredSlots = candidateSlots.map(candidate => ({
+            ...candidate,
+            score: this.scoreTimeSlot(candidate, task, searchEndDate)
+        }));
+
+        // Sort by score (highest first)
+        scoredSlots.sort((a, b) => b.score - a.score);
+
+        // Use the best slot
+        const bestSlot = scoredSlots[0];
+        const taskEnd = new Date(bestSlot.start);
+        taskEnd.setMinutes(taskEnd.getMinutes() + taskDuration);
+
+        return {
+            ...task,
+            scheduledStart: bestSlot.start,
+            scheduledEnd: taskEnd,
+            uid: `lifepilot-${task.id}-${Date.now()}`
+        };
+    }
+
+    /**
+     * Generate optimal start times within a free slot
+     * @param {Object} slot - Free time slot {start, end}
+     * @param {number} taskDuration - Task duration in minutes
+     * @param {Object} task - Task object
+     * @returns {Array} Array of possible start times
+     */
+    generateOptimalStartTimes(slot, taskDuration, task) {
+        const possibleStarts = [];
+        const slotDuration = (slot.end - slot.start) / (1000 * 60);
+        
+        // Generate start times at 30-minute intervals within the slot
+        const intervalMinutes = 30;
+        let currentTime = new Date(slot.start);
+        const slotEnd = new Date(slot.end);
+        slotEnd.setMinutes(slotEnd.getMinutes() - taskDuration - this.breakDuration);
+
+        while (currentTime <= slotEnd) {
+            possibleStarts.push({
+                start: new Date(currentTime),
+                slotStart: slot.start,
+                slotEnd: slot.end
+            });
+            currentTime.setMinutes(currentTime.getMinutes() + intervalMinutes);
+        }
+
+        return possibleStarts;
+    }
+
+    /**
+     * Score a time slot based on multiple factors
+     * @param {Object} candidate - Candidate slot with start time
+     * @param {Object} task - Task to schedule
+     * @param {Date} deadline - Task deadline
+     * @returns {number} Score (higher is better)
+     */
+    scoreTimeSlot(candidate, task, deadline) {
+        let score = 0;
+        const startTime = new Date(candidate.start);
+        const hour = startTime.getHours();
+        const minute = startTime.getMinutes();
+        const timeInMinutes = hour * 60 + minute;
+
+        // 1. Time of day preference (peak productivity hours)
+        // Morning (9-11): Good for focused work
+        if (hour >= 9 && hour < 11) {
+            score += 15;
+        }
+        // Late morning (11-12): Still good
+        else if (hour >= 11 && hour < 12) {
+            score += 10;
+        }
+        // Early afternoon (13-15): Post-lunch, moderate
+        else if (hour >= 13 && hour < 15) {
+            score += 8;
+        }
+        // Late afternoon (15-17): Good for wrapping up
+        else if (hour >= 15 && hour < 17) {
+            score += 12;
+        }
+        // End of day (17-18): Lower priority
+        else if (hour >= 17 && hour < 18) {
+            score += 5;
+        }
+
+        // 2. Prefer times not at the very start of the day (avoid 9:00 AM bunching)
+        if (hour === 9 && minute === 0) {
+            score -= 5; // Slight penalty for 9:00 AM
+        }
+
+        // 3. Deadline urgency - schedule closer to deadline for urgent tasks
+        const daysUntilDeadline = (deadline - startTime) / (1000 * 60 * 60 * 24);
+        if (task.priority >= 8) {
+            // High priority: prefer earlier in the available window
+            if (daysUntilDeadline > 3) {
+                score += 10; // Schedule sooner
+            } else if (daysUntilDeadline > 1) {
+                score += 15;
+            } else {
+                score += 20; // Very urgent
+            }
+        } else {
+            // Lower priority: can be scheduled later
+            if (daysUntilDeadline < 1) {
+                score += 15;
+            } else if (daysUntilDeadline < 3) {
+                score += 8;
+            } else {
+                score += 5;
+            }
+        }
+
+        // 4. Task duration consideration
+        // Longer tasks prefer morning slots
+        if (task.time > 90 && hour >= 9 && hour < 12) {
+            score += 8;
+        }
+        // Shorter tasks can fit anywhere
+        else if (task.time <= 30) {
+            score += 3;
+        }
+
+        // 5. Prefer slots that aren't at the very end of the working day
+        if (hour >= 17) {
+            score -= 3;
+        }
+
+        // 6. Slight preference for round hours (10:00, 11:00, etc.)
+        if (minute === 0) {
+            score += 2;
+        } else if (minute === 30) {
+            score += 1;
+        }
+
+        return score;
     }
 
     /**

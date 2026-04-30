@@ -1,344 +1,409 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to LifePilot</title>
-    <link rel="stylesheet" href="shared-styles.css">
-    <style>
-        .welcome-section {
-            text-align: center;
-            padding: 40px 20px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to LifePilot</title>
+  <link rel="stylesheet" href="main.css">
+  <style>
+    .welcome-section {
+      text-align: center;
+      margin-bottom: 40px;
+    }
 
-        .welcome-section h2 {
-            color: #667eea;
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
+    .welcome-section h2 {
+      color: #081a3a;
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
 
-        .welcome-section p {
-            color: #666;
-            font-size: 1.1em;
-            line-height: 1.6;
-            max-width: 600px;
-            margin: 0 auto 30px;
-        }
+    .welcome-section p {
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.75;
+      max-width: 700px;
+      margin: 0 auto;
+    }
 
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin: 40px 0;
-        }
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 22px;
+      margin-top: 32px;
+    }
 
-        .option-card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
+    .option-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 32px;
+      text-align: center;
+      transition: 0.2s ease;
+      box-shadow: 0 8px 18px rgba(17, 24, 39, 0.04);
+    }
 
-        .option-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-color: #667eea;
-        }
+    .option-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(15, 98, 254, 0.15);
+      border-color: var(--blue);
+    }
 
-        .option-card .icon {
-            font-size: 3em;
-            margin-bottom: 15px;
-        }
+    .option-card .icon {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+    }
 
-        .option-card h3 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 1.3em;
-        }
+    .option-card h3 {
+      color: #081a3a;
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+    }
 
-        .option-card p {
-            color: #666;
-            font-size: 0.95em;
-            margin-bottom: 20px;
-        }
+    .option-card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
 
-        .option-card button {
-            width: 100%;
-            margin: 5px 0;
-        }
+    .option-card button {
+      width: 100%;
+    }
 
-        #message {
-            display: none;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            text-align: center;
-        }
+    #message {
+      display: none;
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin: 20px 0;
+      text-align: center;
+      font-weight: 650;
+    }
 
-        #message.error {
-            background: #ff6b6b;
-            color: white;
-        }
+    #message.error {
+      background: #fee;
+      color: var(--red);
+      border: 1px solid #fcc;
+    }
 
-        #message.success {
-            background: #51cf66;
-            color: white;
-        }
+    #message.success {
+      background: #defbe6;
+      color: var(--green);
+      border: 1px solid #b7f0c3;
+    }
 
-        #message.info {
-            background: #4ecdc4;
-            color: white;
-        }
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(8, 26, 58, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
 
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
+    .loading-overlay.active {
+      display: flex;
+    }
 
-        .loading-overlay.active {
-            display: flex;
-        }
+    .loading-content {
+      background: white;
+      padding: 48px;
+      border-radius: 28px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
 
-        .loading-content {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            text-align: center;
-        }
+    .spinner {
+      border: 4px solid #e5e7eb;
+      border-top: 4px solid var(--blue);
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 24px;
+    }
 
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    .loading-content p {
+      color: var(--text);
+      font-size: 1.1rem;
+      font-weight: 650;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🚀 Welcome to LifePilot</h1>
-            <p>Your intelligent task scheduling assistant</p>
+  <div class="container">
+    <nav class="navbar">
+      <div class="logo">
+        <div class="logo-icon">✦</div>
+        <span>LifePilot</span>
+      </div>
+      <div class="nav-links">
+        <a href="index.html" class="active">Home</a>
+        <a href="lifepilot.html">Planner</a>
+      </div>
+      <button class="nav-btn" onclick="window.location.href='lifepilot.html'">Get Started</button>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-card fade-in">
+        <div class="tag">✨ Get Started with LifePilot</div>
+        <h1>Welcome to<br />LifePilot</h1>
+        <p>
+          Your intelligent task scheduling assistant. LifePilot helps you manage your tasks efficiently by automatically scheduling them around your calendar events.
+        </p>
+        
+        <div class="welcome-section" style="margin-top: 32px;">
+          <h2>Choose How to Begin</h2>
+          <p>
+            Select one of the options below to start planning your day with LifePilot.
+          </p>
         </div>
 
-        <div class="content">
-            <div class="welcome-section">
-                <h2>Get Started</h2>
-                <p>
-                    LifePilot helps you manage your tasks efficiently by automatically scheduling them 
-                    around your calendar events. Choose how you'd like to begin:
-                </p>
+        <div id="message"></div>
+
+        <div class="options-grid">
+          <div class="option-card">
+            <div class="icon">📝</div>
+            <h3>Example Tasks</h3>
+            <p>Start with pre-loaded example tasks to see how LifePilot works</p>
+            <button class="primary-btn" onclick="useExampleTasks()">Use Example Tasks</button>
+          </div>
+
+          <div class="option-card">
+            <div class="icon">📘</div>
+            <h3>Microsoft Outlook</h3>
+            <p>Connect to your Microsoft 365 account to import tasks and calendar events</p>
+            <button class="primary-btn" onclick="connectMicrosoft()">Connect Outlook</button>
+          </div>
+
+          <div class="option-card">
+            <div class="icon">📗</div>
+            <h3>Google Calendar</h3>
+            <p>Connect to your Google account to import tasks and calendar events</p>
+            <button class="primary-btn" onclick="connectGoogle()">Connect Google</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="phone-card fade-in">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <h3>Ready to start? 🚀</h3>
+          <p>Choose your preferred method</p>
+
+          <div class="mini-card">
+            <p><strong>Quick Setup</strong></p>
+            <div style="margin-top: 16px; text-align: left;">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <div style="width: 32px; height: 32px; background: #edf5ff; border-radius: 10px; display: grid; place-items: center;">📝</div>
+                <div>
+                  <div style="font-weight: 700; font-size: 0.9rem;">Example Tasks</div>
+                  <div style="color: var(--muted); font-size: 0.8rem;">Try it instantly</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <div style="width: 32px; height: 32px; background: #edf5ff; border-radius: 10px; display: grid; place-items: center;">📘</div>
+                <div>
+                  <div style="font-weight: 700; font-size: 0.9rem;">Microsoft 365</div>
+                  <div style="color: var(--muted); font-size: 0.8rem;">Outlook integration</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 32px; height: 32px; background: #edf5ff; border-radius: 10px; display: grid; place-items: center;">📗</div>
+                <div>
+                  <div style="font-weight: 700; font-size: 0.9rem;">Google</div>
+                  <div style="color: var(--muted); font-size: 0.8rem;">Calendar & Tasks</div>
+                </div>
+              </div>
             </div>
-
-            <div id="message"></div>
-
-            <div class="options-grid">
-                <div class="option-card">
-                    <div class="icon">📝</div>
-                    <h3>Example Tasks</h3>
-                    <p>Start with pre-loaded example tasks to see how LifePilot works</p>
-                    <button onclick="useExampleTasks()" class="secondary">Use Example Tasks</button>
-                </div>
-
-                <div class="option-card">
-                    <div class="icon">📘</div>
-                    <h3>Microsoft Outlook</h3>
-                    <p>Connect to your Microsoft 365 account to import tasks and calendar events</p>
-                    <button onclick="connectMicrosoft()" class="microsoft">Connect Outlook</button>
-                </div>
-
-                <div class="option-card">
-                    <div class="icon">📗</div>
-                    <h3>Google Calendar</h3>
-                    <p>Connect to your Google account to import tasks and calendar events</p>
-                    <button onclick="connectGoogle()" class="google">Connect Google</button>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p id="loadingMessage">Loading...</p>
     </div>
+  </div>
 
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <p id="loadingMessage">Loading...</p>
-        </div>
-    </div>
+  <!-- Microsoft Graph -->
+  <script src="https://alcdn.msauth.net/browser/2.38.1/js/msal-browser.min.js"></script>
+  
+  <!-- Google APIs -->
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script src="https://accounts.google.com/gsi/client"></script>
+  
+  <!-- Integration Clients -->
+  <script src="integrations/microsoft-graph-client.js"></script>
+  <script src="integrations/google-calendar-client.js"></script>
+  
+  <!-- Shared Utilities -->
+  <script src="shared-utils.js"></script>
 
-    <!-- Microsoft Graph -->
-    <script src="https://alcdn.msauth.net/browser/2.38.1/js/msal-browser.min.js"></script>
-    
-    <!-- Google APIs -->
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://accounts.google.com/gsi/client"></script>
-    
-    <!-- Integration Clients -->
-    <script src="integrations/microsoft-graph-client.js"></script>
-    <script src="integrations/google-calendar-client.js"></script>
-    
-    <!-- Shared Utilities -->
-    <script src="shared-utils.js"></script>
+  <script>
+    let microsoftClient = null;
+    let googleClient = null;
 
-    <script>
-        let microsoftClient = null;
-        let googleClient = null;
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Check if we're returning from an OAuth redirect
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('code') || urlParams.has('state')) {
+        showLoading('Completing authentication...');
+      }
+    });
 
-        // Initialize on page load
-        window.addEventListener('DOMContentLoaded', async () => {
-            // Check if we're returning from an OAuth redirect
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('code') || urlParams.has('state')) {
-                showLoading('Completing authentication...');
-            }
-        });
+    /**
+     * Use example tasks
+     */
+    function useExampleTasks() {
+      showLoading('Loading example tasks...');
+      
+      // Get example data
+      const tasks = LifePilotStorage.getExampleTasks();
+      const events = LifePilotStorage.getExampleEvents();
+      
+      // Save to localStorage
+      LifePilotStorage.saveTasks(tasks);
+      LifePilotStorage.saveEvents(events);
+      
+      showMessage('Example tasks loaded successfully!', 'success');
+      
+      // Redirect after a short delay
+      setTimeout(() => {
+        redirectToLifePilot();
+      }, 1500);
+    }
 
-        /**
-         * Use example tasks
-         */
-        function useExampleTasks() {
-            showLoading('Loading example tasks...');
-            
-            // Get example data
-            const tasks = LifePilotStorage.getExampleTasks();
-            const events = LifePilotStorage.getExampleEvents();
-            
-            // Save to localStorage
-            LifePilotStorage.saveTasks(tasks);
-            LifePilotStorage.saveEvents(events);
-            
-            showMessage('Example tasks loaded successfully!', 'success');
-            
-            // Redirect after a short delay
-            setTimeout(() => {
-                redirectToLifePilot();
-            }, 1500);
+    /**
+     * Connect to Microsoft Outlook
+     */
+    async function connectMicrosoft() {
+      try {
+        showLoading('Connecting to Microsoft...');
+        
+        // Load config
+        const config = await fetch('./config.json').then(r => r.json());
+        
+        // Initialize Microsoft client
+        if (!microsoftClient) {
+          microsoftClient = new MicrosoftGraphClient({
+            clientId: config.MICROSOFT_CLIENT_ID,
+            authority: 'https://login.microsoftonline.com/common',
+            redirectUri: window.location.origin
+          });
+          await microsoftClient.initialize();
         }
+        
+        // Sign in
+        await microsoftClient.signIn();
+        
+        showLoading('Fetching your tasks and calendar...');
+        
+        // Get data
+        const data = await microsoftClient.getCalendarAndTasks(new Date(), 7);
+        
+        // Save to localStorage
+        LifePilotStorage.saveTasks(data.tasks);
+        LifePilotStorage.saveEvents(data.events);
+        
+        hideLoading();
+        showMessage(`Successfully imported ${data.tasks.length} tasks and ${data.events.length} events!`, 'success');
+        
+        // Redirect after a short delay
+        setTimeout(() => {
+          redirectToLifePilot();
+        }, 2000);
+        
+      } catch (error) {
+        hideLoading();
+        console.error('Microsoft connection error:', error);
+        showMessage('Error connecting to Microsoft: ' + error.message, 'error');
+      }
+    }
 
-        /**
-         * Connect to Microsoft Outlook
-         */
-        async function connectMicrosoft() {
-            try {
-                showLoading('Connecting to Microsoft...');
-                
-                // Load config
-                const config = await fetch('./config.json').then(r => r.json());
-                
-                // Initialize Microsoft client
-                if (!microsoftClient) {
-                    microsoftClient = new MicrosoftGraphClient({
-                        clientId: config.MICROSOFT_CLIENT_ID,
-                        authority: 'https://login.microsoftonline.com/common',
-                        redirectUri: window.location.origin
-                    });
-                    await microsoftClient.initialize();
-                }
-                
-                // Sign in
-                await microsoftClient.signIn();
-                
-                showLoading('Fetching your tasks and calendar...');
-                
-                // Get data
-                const data = await microsoftClient.getCalendarAndTasks(new Date(), 7);
-                
-                // Save to localStorage
-                LifePilotStorage.saveTasks(data.tasks);
-                LifePilotStorage.saveEvents(data.events);
-                
-                hideLoading();
-                showMessage(`Successfully imported ${data.tasks.length} tasks and ${data.events.length} events!`, 'success');
-                
-                // Redirect after a short delay
-                setTimeout(() => {
-                    redirectToLifePilot();
-                }, 2000);
-                
-            } catch (error) {
-                hideLoading();
-                console.error('Microsoft connection error:', error);
-                showMessage('Error connecting to Microsoft: ' + error.message, 'error');
-            }
+    /**
+     * Connect to Google Calendar
+     */
+    async function connectGoogle() {
+      try {
+        showLoading('Connecting to Google...');
+        
+        // Load config
+        const config = await fetch('./config.json').then(r => r.json());
+        
+        // Initialize Google client
+        if (!googleClient) {
+          googleClient = new GoogleCalendarClient({
+            clientId: config.GOOGLE_CLIENT_ID,
+            apiKey: config.GOOGLE_API_KEY
+          });
+          await googleClient.initialize();
         }
+        
+        // Sign in
+        await googleClient.signIn();
+        
+        showLoading('Fetching your tasks and calendar...');
+        
+        // Get data
+        const data = await googleClient.getCalendarAndTasks(new Date(), 7);
+        
+        // Save to localStorage
+        LifePilotStorage.saveTasks(data.tasks);
+        LifePilotStorage.saveEvents(data.events);
+        
+        hideLoading();
+        showMessage(`Successfully imported ${data.tasks.length} tasks and ${data.events.length} events!`, 'success');
+        
+        // Redirect after a short delay
+        setTimeout(() => {
+          redirectToLifePilot();
+        }, 2000);
+        
+      } catch (error) {
+        hideLoading();
+        console.error('Google connection error:', error);
+        showMessage('Error connecting to Google: ' + error.message, 'error');
+      }
+    }
 
-        /**
-         * Connect to Google Calendar
-         */
-        async function connectGoogle() {
-            try {
-                showLoading('Connecting to Google...');
-                
-                // Load config
-                const config = await fetch('./config.json').then(r => r.json());
-                
-                // Initialize Google client
-                if (!googleClient) {
-                    googleClient = new GoogleCalendarClient({
-                        clientId: config.GOOGLE_CLIENT_ID,
-                        apiKey: config.GOOGLE_API_KEY
-                    });
-                    await googleClient.initialize();
-                }
-                
-                // Sign in
-                await googleClient.signIn();
-                
-                showLoading('Fetching your tasks and calendar...');
-                
-                // Get data
-                const data = await googleClient.getCalendarAndTasks(new Date(), 7);
-                
-                // Save to localStorage
-                LifePilotStorage.saveTasks(data.tasks);
-                LifePilotStorage.saveEvents(data.events);
-                
-                hideLoading();
-                showMessage(`Successfully imported ${data.tasks.length} tasks and ${data.events.length} events!`, 'success');
-                
-                // Redirect after a short delay
-                setTimeout(() => {
-                    redirectToLifePilot();
-                }, 2000);
-                
-            } catch (error) {
-                hideLoading();
-                console.error('Google connection error:', error);
-                showMessage('Error connecting to Google: ' + error.message, 'error');
-            }
-        }
+    /**
+     * Show message
+     */
+    function showMessage(message, type = 'info') {
+      const messageDiv = document.getElementById('message');
+      messageDiv.textContent = message;
+      messageDiv.className = type;
+      messageDiv.style.display = 'block';
+    }
 
-        /**
-         * Show loading overlay
-         */
-        function showLoading(message = 'Loading...') {
-            document.getElementById('loadingMessage').textContent = message;
-            document.getElementById('loadingOverlay').classList.add('active');
-        }
+    /**
+     * Show loading overlay
+     */
+    function showLoading(message = 'Loading...') {
+      document.getElementById('loadingMessage').textContent = message;
+      document.getElementById('loadingOverlay').classList.add('active');
+    }
 
-        /**
-         * Hide loading overlay
-         */
-        function hideLoading() {
-            document.getElementById('loadingOverlay').classList.remove('active');
-        }
-    </script>
+    /**
+     * Hide loading overlay
+     */
+    function hideLoading() {
+      document.getElementById('loadingOverlay').classList.remove('active');
+    }
+  </script>
 </body>
 </html>

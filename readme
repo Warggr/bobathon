@@ -1,0 +1,135 @@
+# LifePilot 🧭
+
+**Your Daily Decision Assistant - Make Life Easier**
+
+LifePilot is an intelligent web application that helps you make smarter daily decisions by providing personalized recommendations based on your mood, goals, available time, and budget. It combines task management with a weekly calendar view to help you organize your life more effectively.
+
+## Features
+
+### 📋 Personalized Daily Planning
+- **Mood-Based Recommendations**: Get tailored advice based on how you're feeling (Energetic, Tired, Stressed, or Unmotivated)
+- **Goal-Oriented Suggestions**: Focus on what matters most - Study, Work, Health, Money, or Social Life
+- **Time-Aware Planning**: Optimize your activities based on available time (15 minutes to full day)
+- **Budget-Conscious Advice**: Receive recommendations that fit your financial situation
+- **Life Ease Score**: Track your daily productivity and well-being with a 0-100 score
+
+### ✅ Task Management
+- **Add Tasks**: Create tasks with name, time estimate, and optional deadline
+- **Edit & Delete**: Modify or remove tasks as needed
+- **Task Prioritization**: Reorder tasks using up/down arrows
+- **Time Tracking**: Estimate time required for each task
+- **Persistent Storage**: Tasks are saved locally in your browser
+
+### 📅 Weekly Calendar View
+- **Visual Planning**: See your week at a glance with a 7-day calendar grid
+- **Deadline Tracking**: Tasks automatically appear on their scheduled dates
+- **Unscheduled Tasks**: Separate section for tasks without deadlines
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+
+## Technology Stack
+
+- **Pure HTML/CSS/JavaScript**: No external dependencies required
+- **LocalStorage API**: Client-side data persistence
+- **Responsive Design**: Mobile-first approach with CSS Grid and Flexbox
+- **Modern UI**: Gradient backgrounds and smooth animations
+
+## How to Use
+
+### Getting Started
+1. Open `lifepilot.html` in any modern web browser
+2. No installation or setup required - it's a single-file application
+
+### Generate Your Daily Plan
+1. Answer the four questions about your current state:
+   - How do you feel today?
+   - What is your main goal today?
+   - How much time do you have?
+   - What is your budget?
+2. Click "Generate My Plan" to receive personalized recommendations
+3. View your Life Ease Score to track your daily productivity
+
+### Manage Your Tasks
+1. Enter task name, time estimate (in minutes), and optional deadline
+2. Click "Add Task" to create the task
+3. Use the action buttons to:
+   - **↑/↓**: Reorder tasks by priority
+   - **Edit**: Modify task details
+   - **Delete**: Remove completed or unnecessary tasks
+
+### View Your Calendar
+- Tasks with deadlines automatically appear on the weekly calendar
+- Tasks without deadlines are listed in the "Unscheduled Tasks" section
+- Calendar shows the current week starting from Monday
+
+## Recommendation Logic
+
+The application uses a decision matrix based on:
+
+### Mood States
+- **Energetic**: Tackle challenging tasks, creative work, intense activities
+- **Tired**: Focus on routine tasks, light activities, gentle exercises
+- **Stressed**: Break work into chunks, prioritize urgent tasks, practice mindfulness
+- **Unmotivated**: Start with easy wins, set small goals, build momentum
+
+### Time Optimization
+- **15 minutes**: Quick actions and micro-tasks
+- **1 hour**: Focused work sessions
+- **Half day**: Structured approach with breaks
+- **Full day**: Comprehensive planning with multiple activities
+
+### Budget Considerations
+- **Low**: Free or low-cost options
+- **Medium**: Balance between quality and cost
+- **Flexible**: Invest in quality experiences
+
+## Life Ease Score Calculation
+
+The score (0-100) is calculated based on:
+- **Mood Impact**: +20 for energetic, -15 for stressed
+- **Time Availability**: +15 for full day, +5 for 1 hour
+- **Task Management**: +15 for 1-5 tasks, -5 for overload
+
+## Data Privacy
+
+- All data is stored locally in your browser using LocalStorage
+- No data is sent to external servers
+- No account creation or login required
+- Clear your browser data to reset the application
+
+## Browser Compatibility
+
+Works on all modern browsers:
+- Chrome/Edge (recommended)
+- Firefox
+- Safari
+- Opera
+
+## Inspiration
+
+Powered by IBM-inspired Decision Intelligence principles, LifePilot brings enterprise-level decision-making technology to everyday life, helping individuals make smarter, faster, and more personalized daily decisions.
+
+## File Structure
+
+```
+lifepilot.html    # Complete single-file application
+readme            # This documentation file
+```
+
+## Future Enhancements
+
+Potential features for future versions:
+- Export/import tasks
+- Recurring tasks
+- Task categories and tags
+- Statistics and analytics
+- Dark mode toggle
+- Multi-language support
+- Cloud sync capabilities
+
+## License
+
+This is a personal productivity tool created for educational and personal use.
+
+---
+
+**Made with ❤️ to make your daily life easier**

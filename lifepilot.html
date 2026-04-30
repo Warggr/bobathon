@@ -78,9 +78,10 @@
 
     .main-grid {
       display: grid;
-      grid-template-columns: 400px 1fr;
+      grid-template-columns: 450px 650px;
       gap: 24px;
       align-items: start;
+      justify-content: center;
     }
 
     .card {
@@ -687,12 +688,16 @@
       );
 
       if (result.scheduled.length > 0) {
-        // Add scheduled tasks to events
+        // Add scheduled tasks to events with proper spacing
         result.scheduled.forEach(scheduledTask => {
+          // Ensure the scheduled times are properly set
+          const start = new Date(scheduledTask.scheduledStart);
+          const end = new Date(scheduledTask.scheduledEnd);
+          
           scheduledEvents.push({
             taskId: scheduledTask.id,
-            start: scheduledTask.scheduledStart,
-            end: scheduledTask.scheduledEnd,
+            start: start,
+            end: end,
             summary: scheduledTask.name,
             type: 'scheduled'
           });

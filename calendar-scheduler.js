@@ -228,7 +228,7 @@ class CalendarScheduler {
         const scheduled = [];
         const unscheduled = [];
 
-        // Calculate priority scores and optimal scheduling times
+        // Calculate priority scores
         const tasksWithScores = tasks.map(task => {
             let score = task.priority || 5; // Default priority
 
@@ -246,25 +246,30 @@ class CalendarScheduler {
             return { ...task, priorityScore: score };
         });
 
-        // Sort by priority score (highest first), then by deadline
+        // Sort by priority score (highest first), then by deadline, then by duration (longest first)
         const sortedTasks = tasksWithScores.sort((a, b) => {
             if (b.priorityScore !== a.priorityScore) {
                 return b.priorityScore - a.priorityScore;
             }
             // If same priority, schedule tasks with earlier deadlines first
             if (a.deadline && b.deadline) {
-                return new Date(a.deadline) - new Date(b.deadline);
+                const deadlineDiff = new Date(a.deadline) - new Date(b.deadline);
+                if (deadlineDiff !== 0) return deadlineDiff;
             }
-            return 0;
+            // If same deadline or no deadlines, longer tasks first
+            return b.time - a.time;
         });
 
-        // Schedule tasks with improved algorithm
+        // Get all free slots for today only
+        const todaySlots = this.findFreeSlots(startDate, existingEvents);
+        
+        // Schedule tasks sequentially without overlaps
         for (const task of sortedTasks) {
-            const scheduled_task = this.scheduleTaskOptimal(
+            const scheduled_task = this.scheduleTaskInSlots(
                 task,
-                [...existingEvents, ...scheduled],
-                startDate,
-                daysAhead
+                todaySlots,
+                scheduled,
+                startDate
             );
 
             if (scheduled_task) {
@@ -278,41 +283,46 @@ class CalendarScheduler {
     }
 
     /**
-     * Schedule a single task optimally considering time of day and deadline
+     * Schedule a single task in available slots without overlapping
      * @param {Object} task - Task to schedule
-     * @param {Array} existingEvents - Array of existing events
-     * @param {Date} startDate - Start date for scheduling
-     * @param {number} daysAhead - Number of days to look ahead
+     * @param {Array} freeSlots - Array of free time slots for the day
+     * @param {Array} scheduledTasks - Array of already scheduled tasks
+     * @param {Date} date - The date to schedule on
      * @returns {Object|null} Scheduled task or null if cannot schedule
      */
-    scheduleTaskOptimal(task, existingEvents, startDate, daysAhead) {
+    scheduleTaskInSlots(task, freeSlots, scheduledTasks, date) {
         const taskDuration = task.time; // in minutes
         
-        // Determine the date range to search
-        const searchStartDate = new Date(startDate);
-        const searchEndDate = task.deadline ? new Date(task.deadline) : new Date(startDate);
-        if (!task.deadline) {
-            searchEndDate.setDate(searchEndDate.getDate() + daysAhead);
-        }
-
-        // Build a list of candidate slots across all days
+        // Build a list of candidate slots that don't overlap with scheduled tasks
         const candidateSlots = [];
 
-        for (let d = new Date(searchStartDate); d <= searchEndDate; d.setDate(d.getDate() + 1)) {
-            const freeSlots = this.findFreeSlots(d, existingEvents);
+        for (const slot of freeSlots) {
+            // Generate possible start times within this slot
+            const possibleStarts = this.generateOptimalStartTimes(
+                slot,
+                taskDuration,
+                task
+            );
 
-            for (const slot of freeSlots) {
-                const slotDuration = (slot.end - slot.start) / (1000 * 60); // in minutes
+            // Filter out start times that would overlap with already scheduled tasks
+            for (const candidate of possibleStarts) {
+                const taskEnd = new Date(candidate.start);
+                taskEnd.setMinutes(taskEnd.getMinutes() + taskDuration);
+                
+                // Check if this time slot overlaps with any scheduled task
+                const hasOverlap = scheduledTasks.some(scheduled => {
+                    const scheduledStart = new Date(scheduled.scheduledStart);
+                    const scheduledEnd = new Date(scheduled.scheduledEnd);
+                    
+                    // Add break duration to scheduled end
+                    scheduledEnd.setMinutes(scheduledEnd.getMinutes() + this.breakDuration);
+                    
+                    // Check for overlap
+                    return (candidate.start < scheduledEnd && taskEnd > scheduledStart);
+                });
 
-                if (slotDuration >= taskDuration + this.breakDuration) {
-                    // Calculate all possible start times within this slot
-                    const possibleStarts = this.generateOptimalStartTimes(
-                        slot,
-                        taskDuration,
-                        task
-                    );
-
-                    candidateSlots.push(...possibleStarts);
+                if (!hasOverlap) {
+                    candidateSlots.push(candidate);
                 }
             }
         }
@@ -324,7 +334,7 @@ class CalendarScheduler {
         // Score each candidate slot and pick the best one
         const scoredSlots = candidateSlots.map(candidate => ({
             ...candidate,
-            score: this.scoreTimeSlot(candidate, task, searchEndDate)
+            score: this.scoreTimeSlot(candidate, task, date)
         }));
 
         // Sort by score (highest first)
@@ -339,7 +349,7 @@ class CalendarScheduler {
             ...task,
             scheduledStart: bestSlot.start,
             scheduledEnd: taskEnd,
-            uid: `lifepilot-${task.id}-${Date.now()}`
+            uid: `lifepilot-${task.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
         };
     }
 

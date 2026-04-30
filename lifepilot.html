@@ -935,7 +935,7 @@
           <h2>Task Manager & Schedule</h2>
           <p class="subtitle">Add your tasks and let LifePilot schedule them automatically.</p>
         </div>
-        <button class="primary-btn" onclick="scheduleAllTasks()">🤖 Auto-Schedule Tasks</button>
+        <button class="primary-btn" onclick="scheduleTasksToCalendar()">🤖 Auto-Schedule Tasks</button>
       </div>
 
       <div class="planner-grid">
@@ -1228,28 +1228,53 @@
         return { ...task, priority: adjustedPriority };
       });
 
-      // Add unique IDs to tasks
-      const tasksWithIds = filteredTasks.map((task, index) => ({
+      // Add unique IDs to tasks and store them (NOT scheduled yet)
+      currentPlan = filteredTasks.map((task, index) => ({
         ...task,
-        id: `${goal.toLowerCase()}-${index}-${Date.now()}`
+        id: `${goal.toLowerCase()}-${index}-${Date.now()}`,
+        status: 'pending' // Mark as pending, not scheduled
       }));
-
-      // Schedule tasks using CalendarScheduler
-      scheduleTasksToCalendar(tasksWithIds);
       
-      // Update the timeline view with scheduled tasks
-      updateTimelineView(tasksWithIds);
+      // Update the timeline view with unscheduled tasks
+      updateTimelineView(currentPlan);
       
       // Update selections
       updateSelections();
     }
 
-    function scheduleTasksToCalendar(tasks) {
+    function scheduleTasksToCalendar() {
+      // Get all pending tasks from mood-based plan and manual tasks
+      const pendingMoodTasks = currentPlan.filter(t => t.status === 'pending');
+      const pendingManualTasks = manualTasks.filter(t => t.status === 'pending');
+      const allPendingTasks = [...pendingMoodTasks, ...pendingManualTasks];
+      
+      if (allPendingTasks.length === 0) {
+        showMessage('No tasks to schedule!', 'info');
+        return;
+      }
+      
       // Get existing events (if any)
       const existingEvents = importedEvents || [];
       
       // Use improved priority-based scheduling for TODAY ONLY
-      const result = scheduler.scheduleTasksPriority(tasks, existingEvents, new Date(), 0);
+      const result = scheduler.scheduleTasksPriority(allPendingTasks, existingEvents, new Date(), 0);
+      
+      // Mark mood-based tasks as scheduled
+      result.scheduled.forEach(scheduledTask => {
+        const moodTask = currentPlan.find(t => t.id === scheduledTask.id);
+        if (moodTask) {
+          moodTask.status = 'scheduled';
+          moodTask.scheduledStart = scheduledTask.scheduledStart;
+          moodTask.scheduledEnd = scheduledTask.scheduledEnd;
+        }
+        
+        const manualTask = manualTasks.find(t => t.id === scheduledTask.id);
+        if (manualTask) {
+          manualTask.status = 'scheduled';
+          manualTask.scheduledStart = scheduledTask.scheduledStart;
+          manualTask.scheduledEnd = scheduledTask.scheduledEnd;
+        }
+      });
       
       // Display scheduled tasks
       displayScheduledTasks(result.scheduled);
@@ -1265,6 +1290,11 @@
       
       // Update calendar view
       renderCalendar();
+      
+      // Update timeline view
+      updateTimelineView(currentPlan);
+      
+      showMessage(`✅ Successfully scheduled ${result.scheduled.length} task(s) for today!`, 'success');
     }
 
     function displayScheduledTasks(scheduledTasks) {
@@ -1453,60 +1483,8 @@
       }).join('');
     }
 
-    // Schedule all tasks using CalendarScheduler
-    function scheduleAllTasks() {
-      if (manualTasks.length === 0) {
-        showMessage('No tasks to schedule. Add some tasks first!', 'error');
-        return;
-      }
-
-      showMessage('Scheduling tasks... ⏳', 'info');
-
-      // Get only pending tasks
-      const pendingTasks = manualTasks.filter(task => task.status === 'pending');
-
-      if (pendingTasks.length === 0) {
-        showMessage('All tasks are already scheduled!', 'info');
-        return;
-      }
-
-      // Schedule tasks using the improved priority-based scheduler for TODAY ONLY
-      const result = scheduler.scheduleTasksPriority(
-        pendingTasks,
-        importedEvents,
-        new Date(),
-        0 // Only schedule for today (0 days ahead)
-      );
-
-      // Update task statuses
-      result.scheduled.forEach(scheduledTask => {
-        const task = manualTasks.find(t => t.id === scheduledTask.id);
-        if (task) {
-          task.status = 'scheduled';
-          task.scheduledStart = scheduledTask.scheduledStart;
-          task.scheduledEnd = scheduledTask.scheduledEnd;
-        }
-      });
-
-      saveTasks();
-      renderTasksList();
-      displayScheduledTasks(result.scheduled, result.unscheduled);
-
-      // Show results
-      if (result.scheduled.length > 0 && result.unscheduled.length === 0) {
-        showMessage(`✅ All ${result.scheduled.length} tasks scheduled successfully!`, 'success');
-      } else if (result.scheduled.length > 0) {
-        showMessage(`⚠️ ${result.scheduled.length} tasks scheduled, ${result.unscheduled.length} couldn't fit`, 'warning');
-      } else {
-        showMessage(`❌ No tasks could be scheduled. Try adjusting deadlines or durations.`, 'error');
-      }
-
-      // Update timeline with scheduled tasks
-      updateTimelineWithTasks(result.scheduled);
-      
-      // Update calendar view
-      renderCalendar();
-    }
+    // Note: scheduleAllTasks() has been replaced by scheduleTasksToCalendar()
+    // which handles both mood-based and manual tasks together
 
     // Display scheduled and unscheduled tasks
     function displayScheduledTasks(scheduled, unscheduled) {

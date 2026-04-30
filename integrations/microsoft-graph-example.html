@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Graph API - Calendar & Tasks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .auth-section {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .user-info.active {
+            display: block;
+        }
+
+        .user-info h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .data-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .data-section.active {
+            display: block;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .data-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .data-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .event-item, .task-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-item h4, .task-item h4 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .event-time, .task-meta {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .event-location {
+            color: #888;
+            font-size: 0.85em;
+        }
+
+        .task-priority {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .priority-high {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .priority-normal {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .priority-low {
+            background: #95e1d3;
+            color: #333;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Microsoft Graph API Integration</h1>
+            <p>Connect to your Microsoft account to view calendar events and tasks</p>
+        </div>
+
+        <div class="content">
+            <div class="auth-section" id="authSection">
+                <button id="signInBtn" onclick="signIn()">Sign In with Microsoft</button>
+            </div>
+
+            <div class="user-info" id="userInfo">
+                <h3>👤 Signed in as: <span id="userName"></span></h3>
+                <p>Email: <span id="userEmail"></span></p>
+                <button onclick="signOut()">Sign Out</button>
+                <button onclick="loadData()">Refresh Data</button>
+            </div>
+
+            <div id="errorMessage"></div>
+
+            <div class="data-section" id="dataSection">
+                <div class="stats" id="stats"></div>
+
+                <div class="data-grid">
+                    <div class="data-card">
+                        <h3>📅 Calendar Events (Next 7 Days)</h3>
+                        <div id="eventsContainer">
+                            <div class="loading">Loading events</div>
+                        </div>
+                    </div>
+
+                    <div class="data-card">
+                        <h3>✅ Tasks</h3>
+                        <div id="tasksContainer">
+                            <div class="loading">Loading tasks</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MSAL.js library -->
+    <script src="https://alcdn.msauth.net/browser/2.38.1/js/msal-browser.min.js"></script>
+    
+    <!-- Microsoft Graph Client -->
+    <script src="microsoft-graph-client.js"></script>
+
+    <script>
+        let graphClient;
+
+        // Initialize the application
+        async function initializeApp() {
+            const ENV = await fetch('./config.json').then(response => response.json());
+            console.log(ENV);
+            const config = {
+                clientId: ENV.CLIENT_ID,
+                authority: 'https://login.microsoftonline.com/common',
+                redirectUri: window.location.origin
+            };
+            try {
+                graphClient = new MicrosoftGraphClient(config);
+                const account = await graphClient.initialize();
+
+                if (account) {
+                    await onSignedIn();
+                }
+            } catch (error) {
+                showError('Initialization error: ' + error.message);
+            }
+        }
+
+        // Sign in
+        async function signIn() {
+            try {
+                document.getElementById('signInBtn').disabled = true;
+                await graphClient.signIn();
+                await onSignedIn();
+            } catch (error) {
+                showError('Sign in error: ' + error.message);
+                document.getElementById('signInBtn').disabled = false;
+            }
+        }
+
+        // Sign out
+        async function signOut() {
+            try {
+                await graphClient.signOut();
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('userInfo').classList.remove('active');
+                document.getElementById('dataSection').classList.remove('active');
+                document.getElementById('signInBtn').disabled = false;
+            } catch (error) {
+                showError('Sign out error: ' + error.message);
+            }
+        }
+
+        // Handle successful sign in
+        async function onSignedIn() {
+            try {
+                const profile = await graphClient.getUserProfile();
+                
+                document.getElementById('userName').textContent = profile.displayName;
+                document.getElementById('userEmail').textContent = profile.mail || profile.userPrincipalName;
+                
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userInfo').classList.add('active');
+                document.getElementById('dataSection').classList.add('active');
+                
+                await loadData();
+            } catch (error) {
+                showError('Error loading profile: ' + error.message);
+            }
+        }
+
+        // Load calendar and tasks data
+        async function loadData() {
+            try {
+                clearError();
+                
+                // Show loading state
+                document.getElementById('eventsContainer').innerHTML = '<div class="loading">Loading events</div>';
+                document.getElementById('tasksContainer').innerHTML = '<div class="loading">Loading tasks</div>';
+                
+                // Fetch data for the next 7 days
+                const data = await graphClient.getCalendarAndTasks(new Date(), 7);
+                
+                // Display statistics
+                displayStats(data);
+                
+                // Display events
+                displayEvents(data.events);
+                
+                // Display tasks
+                displayTasks(data.tasks);
+                
+            } catch (error) {
+                showError('Error loading data: ' + error.message);
+            }
+        }
+
+        // Display statistics
+        function displayStats(data) {
+            const statsHtml = `
+                <div class="stat-item">
+                    <div class="stat-number">${data.events.length}</div>
+                    <div class="stat-label">Calendar Events</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${data.tasks.length}</div>
+                    <div class="stat-label">Pending Tasks</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${Math.round(data.tasks.reduce((sum, t) => sum + t.time, 0) / 60)}h</div>
+                    <div class="stat-label">Estimated Time</div>
+                </div>
+            `;
+            document.getElementById('stats').innerHTML = statsHtml;
+        }
+
+        // Display calendar events
+        function displayEvents(events) {
+            const container = document.getElementById('eventsContainer');
+            
+            if (events.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No events found for the next 7 days</p>';
+                return;
+            }
+            
+            const eventsHtml = events.map(event => {
+                const startDate = new Date(event.start);
+                const endDate = new Date(event.end);
+                const dateStr = startDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const timeStr = event.isAllDay ? 'All Day' : 
+                    `${startDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+                
+                return `
+                    <div class="event-item">
+                        <h4>${event.summary}</h4>
+                        <div class="event-time">📅 ${dateStr} • ${timeStr}</div>
+                        ${event.location ? `<div class="event-location">📍 ${event.location}</div>` : ''}
+                        ${event.description ? `<div style="margin-top: 8px; color: #666; font-size: 0.9em;">${event.description}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = eventsHtml;
+        }
+
+        // Display tasks
+        function displayTasks(tasks) {
+            const container = document.getElementById('tasksContainer');
+            
+            if (tasks.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No pending tasks found</p>';
+                return;
+            }
+            
+            const tasksHtml = tasks.map(task => {
+                const priorityClass = task.priority >= 7 ? 'priority-high' : 
+                                     task.priority >= 4 ? 'priority-normal' : 'priority-low';
+                const priorityLabel = task.priority >= 7 ? 'High' : 
+                                     task.priority >= 4 ? 'Normal' : 'Low';
+                
+                const deadlineStr = task.deadline ? 
+                    `⏰ Due: ${new Date(task.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '';
+                
+                return `
+                    <div class="task-item">
+                        <h4>
+                            ${task.name}
+                            <span class="task-priority ${priorityClass}">${priorityLabel}</span>
+                        </h4>
+                        <div class="task-meta">
+                            📋 ${task.listName} • ⏱️ ${task.time} min
+                            ${deadlineStr ? ` • ${deadlineStr}` : ''}
+                        </div>
+                        ${task.description ? `<div style="margin-top: 8px; color: #666; font-size: 0.9em;">${task.description}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = tasksHtml;
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerHTML = `<div class="error">❌ ${message}</div>`;
+        }
+
+        // Clear error message
+        function clearError() {
+            document.getElementById('errorMessage').innerHTML = '';
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+</body>
+</html>

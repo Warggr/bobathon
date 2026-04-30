@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Calendar - Microsoft & Google</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4285f4 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4285f4 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .providers-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .provider-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .provider-card.microsoft {
+            border-left: 4px solid #667eea;
+        }
+
+        .provider-card.google {
+            border-left: 4px solid #4285f4;
+        }
+
+        .provider-card h3 {
+            margin-bottom: 15px;
+        }
+
+        .provider-card.microsoft h3 {
+            color: #667eea;
+        }
+
+        .provider-card.google h3 {
+            color: #4285f4;
+        }
+
+        .provider-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .status-signed-in {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-signed-out {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.google-btn {
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+        }
+
+        button.google-btn:hover {
+            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
+        }
+
+        .data-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .data-section.active {
+            display: block;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #4285f4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .data-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .data-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .event-item, .task-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .provider-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        .provider-badge.microsoft {
+            background: #667eea;
+            color: white;
+        }
+
+        .provider-badge.google {
+            background: #4285f4;
+            color: white;
+        }
+
+        .event-item h4, .task-item h4 {
+            color: #333;
+            margin-bottom: 8px;
+            padding-right: 80px;
+        }
+
+        .event-time, .task-meta {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .controls h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗓️ Unified Calendar Integration</h1>
+            <p>Connect to Microsoft and Google calendars simultaneously</p>
+        </div>
+
+        <div class="content">
+            <div class="providers-section">
+                <div class="provider-card microsoft">
+                    <h3>📘 Microsoft 365</h3>
+                    <div id="msStatus" class="provider-status status-signed-out">Not Connected</div>
+                    <div>
+                        <button onclick="signInMicrosoft()">Sign In</button>
+                        <button onclick="signOutMicrosoft()">Sign Out</button>
+                    </div>
+                </div>
+
+                <div class="provider-card google">
+                    <h3>📗 Google</h3>
+                    <div id="googleStatus" class="provider-status status-signed-out">Not Connected</div>
+                    <div>
+                        <button class="google-btn" onclick="signInGoogle()">Sign In</button>
+                        <button class="google-btn" onclick="signOutGoogle()">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <h4>Data Controls</h4>
+                <button onclick="loadAllData()">Load All Data</button>
+                <button onclick="loadMicrosoftOnly()">Microsoft Only</button>
+                <button onclick="loadGoogleOnly()">Google Only</button>
+            </div>
+
+            <div id="errorMessage"></div>
+
+            <div class="data-section" id="dataSection">
+                <div class="stats" id="stats"></div>
+
+                <div class="data-grid">
+                    <div class="data-card">
+                        <h3>📅 Calendar Events (Next 7 Days)</h3>
+                        <div id="eventsContainer">
+                            <div class="loading">Loading events</div>
+                        </div>
+                    </div>
+
+                    <div class="data-card">
+                        <h3>✅ Tasks</h3>
+                        <div id="tasksContainer">
+                            <div class="loading">Loading tasks</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Microsoft Graph -->
+    <script src="https://alcdn.msauth.net/browser/2.38.1/js/msal-browser.min.js"></script>
+    
+    <!-- Google APIs -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+    
+    <!-- Calendar Clients -->
+    <script src="microsoft-graph-client.js"></script>
+    <script src="google-calendar-client.js"></script>
+    <script src="unified-calendar-client.js"></script>
+
+    <script>
+        // Configuration
+
+        let unifiedClient;
+
+        // Initialize
+        async function initializeApp() {
+            const env = await fetch('./config.json').then(response => response.json());
+            console.log(env);
+            const config = {
+                microsoft: {
+                    clientId: env.MICROSOFT_CLIENT_ID,
+                    authority: 'https://login.microsoftonline.com/common',
+                    redirectUri: window.location.origin
+                },
+                google: {
+                    clientId: env.GOOGLE_CLIENT_ID
+                }
+            };
+            try {
+                unifiedClient = new UnifiedCalendarClient();
+                
+                // Initialize both providers
+                await unifiedClient.initializeMicrosoft(config.microsoft);
+                await unifiedClient.initializeGoogle(config.google);
+
+                updateStatus();
+ 
+                // Load data if any provider is signed in
+                const status = unifiedClient.getProvidersStatus();
+                if (status.microsoft.signedIn || status.google.signedIn) {
+                    await loadAllData();
+                }
+            } catch (error) {
+                showError('Initialization error: ' + error.message);
+            }
+        }
+
+        // Update provider status display
+        function updateStatus() {
+            const status = unifiedClient.getProvidersStatus();
+            
+            const msStatus = document.getElementById('msStatus');
+            if (status.microsoft.signedIn) {
+                msStatus.textContent = 'Connected ✓';
+                msStatus.className = 'provider-status status-signed-in';
+            } else {
+                msStatus.textContent = 'Not Connected';
+                msStatus.className = 'provider-status status-signed-out';
+            }
+            
+            const googleStatus = document.getElementById('googleStatus');
+            if (status.google.signedIn) {
+                googleStatus.textContent = 'Connected ✓';
+                googleStatus.className = 'provider-status status-signed-in';
+            } else {
+                googleStatus.textContent = 'Not Connected';
+                googleStatus.className = 'provider-status status-signed-out';
+            }
+        }
+
+        // Sign in to Microsoft
+        async function signInMicrosoft() {
+            try {
+                await unifiedClient.signIn('microsoft');
+                updateStatus();
+                await loadAllData();
+            } catch (error) {
+                showError('Microsoft sign in error: ' + error.message);
+            }
+        }
+
+        // Sign in to Google
+        async function signInGoogle() {
+            try {
+                await unifiedClient.signIn('google');
+                updateStatus();
+                await loadAllData();
+            } catch (error) {
+                showError('Google sign in error: ' + error.message);
+            }
+        }
+
+        // Sign out from Microsoft
+        async function signOutMicrosoft() {
+            try {
+                if (unifiedClient.getActiveProvider() === 'microsoft') {
+                    await unifiedClient.signOut();
+                } else {
+                    await unifiedClient.providers.microsoft.signOut();
+                }
+                updateStatus();
+                document.getElementById('dataSection').classList.remove('active');
+            } catch (error) {
+                showError('Microsoft sign out error: ' + error.message);
+            }
+        }
+
+        // Sign out from Google
+        function signOutGoogle() {
+            try {
+                if (unifiedClient.getActiveProvider() === 'google') {
+                    unifiedClient.signOut();
+                } else {
+                    unifiedClient.providers.google.signOut();
+                }
+                updateStatus();
+                document.getElementById('dataSection').classList.remove('active');
+            } catch (error) {
+                showError('Google sign out error: ' + error.message);
+            }
+        }
+
+        // Load data from all signed-in providers
+        async function loadAllData() {
+            try {
+                clearError();
+                document.getElementById('dataSection').classList.add('active');
+                
+                document.getElementById('eventsContainer').innerHTML = '<div class="loading">Loading events</div>';
+                document.getElementById('tasksContainer').innerHTML = '<div class="loading">Loading tasks</div>';
+                
+                const data = await unifiedClient.getAllProvidersData(new Date(), 7);
+                
+                displayStats(data);
+                displayEvents(data.events);
+                displayTasks(data.tasks);
+                
+            } catch (error) {
+                showError('Error loading data: ' + error.message);
+            }
+        }
+
+        // Load Microsoft data only
+        async function loadMicrosoftOnly() {
+            try {
+                clearError();
+                unifiedClient.switchProvider('microsoft');
+                document.getElementById('dataSection').classList.add('active');
+                
+                document.getElementById('eventsContainer').innerHTML = '<div class="loading">Loading events</div>';
+                document.getElementById('tasksContainer').innerHTML = '<div class="loading">Loading tasks</div>';
+                
+                const data = await unifiedClient.getCalendarAndTasks(new Date(), 7);
+                
+                displayStats(data);
+                displayEvents(data.events);
+                displayTasks(data.tasks);
+                
+            } catch (error) {
+                showError('Error loading Microsoft data: ' + error.message);
+            }
+        }
+
+        // Load Google data only
+        async function loadGoogleOnly() {
+            try {
+                clearError();
+                unifiedClient.switchProvider('google');
+                document.getElementById('dataSection').classList.add('active');
+                
+                document.getElementById('eventsContainer').innerHTML = '<div class="loading">Loading events</div>';
+                document.getElementById('tasksContainer').innerHTML = '<div class="loading">Loading tasks</div>';
+                
+                const data = await unifiedClient.getCalendarAndTasks(new Date(), 7);
+                
+                displayStats(data);
+                displayEvents(data.events);
+                displayTasks(data.tasks);
+                
+            } catch (error) {
+                showError('Error loading Google data: ' + error.message);
+            }
+        }
+
+        // Display statistics
+        function displayStats(data) {
+            const statsHtml = `
+                <div class="stat-item">
+                    <div class="stat-number">${data.events.length}</div>
+                    <div class="stat-label">Calendar Events</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${data.tasks.length}</div>
+                    <div class="stat-label">Pending Tasks</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${Math.round(data.tasks.reduce((sum, t) => sum + t.time, 0) / 60)}h</div>
+                    <div class="stat-label">Estimated Time</div>
+                </div>
+                ${data.providers ? `
+                <div class="stat-item">
+                    <div class="stat-number">${data.providers.length}</div>
+                    <div class="stat-label">Providers</div>
+                </div>
+                ` : ''}
+            `;
+            document.getElementById('stats').innerHTML = statsHtml;
+        }
+
+        // Display events
+        function displayEvents(events) {
+            const container = document.getElementById('eventsContainer');
+            
+            if (events.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No events found</p>';
+                return;
+            }
+            
+            const eventsHtml = events.map(event => {
+                const startDate = new Date(event.start);
+                const endDate = new Date(event.end);
+                const dateStr = startDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const timeStr = event.isAllDay ? 'All Day' : 
+                    `${startDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+                
+                const providerClass = event.source === 'microsoft-calendar' ? 'microsoft' : 'google';
+                const providerLabel = event.source === 'microsoft-calendar' ? 'MS' : 'Google';
+                
+                return `
+                    <div class="event-item">
+                        <span class="provider-badge ${providerClass}">${providerLabel}</span>
+                        <h4>${event.summary}</h4>
+                        <div class="event-time">📅 ${dateStr} • ${timeStr}</div>
+                        ${event.location ? `<div class="event-location">📍 ${event.location}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = eventsHtml;
+        }
+
+        // Display tasks
+        function displayTasks(tasks) {
+            const container = document.getElementById('tasksContainer');
+            
+            if (tasks.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No pending tasks found</p>';
+                return;
+            }
+            
+            const tasksHtml = tasks.map(task => {
+                const deadlineStr = task.deadline ? 
+                    `⏰ ${new Date(task.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '';
+                
+                const providerClass = task.source === 'microsoft-todo' ? 'microsoft' : 'google';
+                const providerLabel = task.source === 'microsoft-todo' ? 'MS' : 'Google';
+                
+                return `
+                    <div class="task-item">
+                        <span class="provider-badge ${providerClass}">${providerLabel}</span>
+                        <h4>${task.name}</h4>
+                        <div class="task-meta">
+                            📋 ${task.listName} • ⏱️ ${task.time} min
+                            ${deadlineStr ? ` • ${deadlineStr}` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = tasksHtml;
+        }
+
+        // Show error
+        function showError(message) {
+            document.getElementById('errorMessage').innerHTML = `<div class="error">❌ ${message}</div>`;
+        }
+
+        // Clear error
+        function clearError() {
+            document.getElementById('errorMessage').innerHTML = '';
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+</body>
+</html>

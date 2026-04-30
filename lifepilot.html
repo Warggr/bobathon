@@ -790,7 +790,7 @@
         <div class="tag">✨ AI-powered daily planning</div>
         <h1>Your day.<br />Planned smarter.</h1>
         <p>
-          LifePilot helps you make better daily decisions with personalized suggestions based on your mood, time, goals and budget.
+          LifePilot helps you make better daily decisions with personalized suggestions based on your mood, time, and goals.
         </p>
         <div class="hero-actions">
           <button class="primary-btn" onclick="scrollToPlanner()">Start Your Day</button>
@@ -830,7 +830,7 @@
         <div class="section-title">
           <div>
             <h2>Tell us about your day</h2>
-            <p class="subtitle">Choose your mood, goal, available time and budget.</p>
+            <p class="subtitle">Choose your mood, goal, and available time.</p>
           </div>
         </div>
 
@@ -848,13 +848,11 @@
 
           <div class="question-card">
             <h4>What's your main goal?</h4>
-            <div class="big-icon" id="goalIcon">💼</div>
+            <div class="big-icon" id="goalIcon">📚</div>
             <select id="goal" onchange="updateSelections()">
-              <option value="Work" selected>Work</option>
-              <option value="Study">Study</option>
+              <option value="Study" selected>Study</option>
               <option value="Health">Health</option>
               <option value="Social">Social</option>
-              <option value="Finance">Finance</option>
             </select>
           </div>
 
@@ -866,16 +864,6 @@
               <option value="1 hour" selected>1 hour</option>
               <option value="Half day">Half day</option>
               <option value="Full day">Full day</option>
-            </select>
-          </div>
-
-          <div class="question-card">
-            <h4>Budget?</h4>
-            <div class="big-icon">👛</div>
-            <select id="budget" onchange="updateSelections()">
-              <option value="Low" selected>Low</option>
-              <option value="Medium">Medium</option>
-              <option value="Flexible">Flexible</option>
             </select>
           </div>
         </div>
@@ -900,15 +888,6 @@
           </div>
           <div class="metric-value" id="energyValue">Medium</div>
           <p id="energyText">Balanced pace recommended.</p>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-top">
-            <span>Budget Overview</span>
-            <span class="metric-icon">💸</span>
-          </div>
-          <div class="metric-value" id="budgetValue">₺45</div>
-          <p id="budgetText">Low-cost plan selected.</p>
         </div>
 
         <div class="metric-card">
@@ -953,23 +932,61 @@
     <section class="section fade-in">
       <div class="section-title">
         <div>
-          <h2>Customize Your Schedule</h2>
-          <p class="subtitle">Add extra activities to make the plan more personal.</p>
+          <h2>Task Manager & Schedule</h2>
+          <p class="subtitle">Add your tasks and let LifePilot schedule them automatically.</p>
         </div>
-        <button class="primary-btn" onclick="savePlan()">💾 Save</button>
+        <button class="primary-btn" onclick="scheduleAllTasks()">🤖 Auto-Schedule Tasks</button>
       </div>
 
       <div class="planner-grid">
-        <div class="schedule-list" id="scheduleList">
-          <div class="schedule-block block-green">Focus Session <span>25 min</span></div>
-          <div class="schedule-block block-purple">Study <span>40 min</span></div>
-          <div class="schedule-block block-orange">Lunch Break <span>30 min</span></div>
-          <div class="schedule-block block-blue">Project Work <span>50 min</span></div>
-          <div class="drop-zone">Drop or add activity here</div>
+        <!-- Task Input Form -->
+        <div>
+          <h3 style="margin-bottom: 14px; color: #081a3a;">➕ Add New Task</h3>
+          <div style="background: #f8fbff; border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 20px;">
+            <div style="display: grid; gap: 12px;">
+              <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: 700; color: var(--text); font-size: 0.9rem;">Task Name *</label>
+                <input type="text" id="taskName" placeholder="e.g., Complete project report" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem;">
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                  <label style="display: block; margin-bottom: 6px; font-weight: 700; color: var(--text); font-size: 0.9rem;">Duration (minutes) *</label>
+                  <input type="number" id="taskDuration" placeholder="60" min="1" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem;">
+                </div>
+                <div>
+                  <label style="display: block; margin-bottom: 6px; font-weight: 700; color: var(--text); font-size: 0.9rem;">Deadline</label>
+                  <input type="date" id="taskDeadline" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.95rem;">
+                </div>
+              </div>
+              <button class="primary-btn" onclick="addManualTask()" style="margin-top: 8px;">Add Task</button>
+            </div>
+          </div>
+
+          <!-- My Tasks List -->
+          <h3 style="margin-bottom: 14px; color: #081a3a;">📋 My Tasks</h3>
+          <div id="tasksList" class="activity-list">
+            <div style="text-align: center; padding: 30px; color: var(--muted); font-size: 0.9rem;">
+              No tasks yet. Add your first task above!
+            </div>
+          </div>
+
+          <!-- Scheduled Tasks Display -->
+          <div id="scheduledTasksSection" style="display: none; margin-top: 20px;">
+            <h3 style="margin-bottom: 14px; color: #081a3a;">✅ Scheduled Tasks</h3>
+            <div id="scheduledTasksList" class="activity-list"></div>
+          </div>
+
+          <!-- Unscheduled Tasks Display -->
+          <div id="unscheduledTasksSection" style="display: none; margin-top: 20px;">
+            <h3 style="margin-bottom: 14px; color: #da1e28;">⚠️ Unscheduled Tasks</h3>
+            <div id="unscheduledTasksList" class="activity-list"></div>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-top: 10px;">These tasks couldn't be scheduled. Try extending deadlines or reducing task durations.</p>
+          </div>
         </div>
 
+        <!-- Quick Activities -->
         <div>
-          <h3 style="margin-bottom: 14px; color: #081a3a;">Add Activities</h3>
+          <h3 style="margin-bottom: 14px; color: #081a3a;">⚡ Quick Activities</h3>
           <div class="activity-list">
             <div class="activity-card">
               <div class="activity-left"><div class="activity-emoji">🚶</div><div><h4>Short Walk</h4><p>15 min</p></div></div>
@@ -991,6 +1008,15 @@
               <div class="activity-left"><div class="activity-emoji">🗓️</div><div><h4>Plan Tomorrow</h4><p>10 min</p></div></div>
               <button class="plus-btn" onclick="addActivity('Plan Tomorrow', '10 min', '🗓️')">+</button>
             </div>
+          </div>
+
+          <!-- Calendar Import Section -->
+          <div style="margin-top: 20px; padding: 16px; background: #f8fbff; border: 1px solid var(--border); border-radius: 18px;">
+            <h4 style="margin-bottom: 10px; color: #081a3a;">📅 Import Calendar</h4>
+            <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 12px;">Import your existing calendar to avoid scheduling conflicts.</p>
+            <input type="file" id="icsFileInput" accept=".ics" style="display: none;" onchange="handleICSImport(event)">
+            <button class="secondary-btn" onclick="document.getElementById('icsFileInput').click()" style="width: 100%;">📥 Import ICS File</button>
+            <div id="importStatus" style="margin-top: 10px; font-size: 0.85rem;"></div>
           </div>
         </div>
       </div>
@@ -1033,8 +1059,13 @@
     </footer>
   </div>
 
+  <script src="calendar-scheduler.js"></script>
   <script>
     let currentPlan = [];
+    let manualTasks = [];
+    let importedEvents = [];
+    let scheduler = new CalendarScheduler();
+    scheduler.setWorkingHours(8, 22); // 8 AM to 10 PM for more flexibility
 
     const moodIcons = {
       Energetic: "⚡",
@@ -1044,45 +1075,34 @@
     };
 
     const goalIcons = {
-      Work: "💼",
       Study: "📚",
       Health: "❤️",
-      Social: "👥",
-      Finance: "💰"
+      Social: "👥"
     };
 
-    const plans = {
-      Work: [
-        { time: "09:00", title: "Reset Your Mind", desc: "10 min breathing exercise", emoji: "🌿", duration: "10 min" },
-        { time: "09:15", title: "Focus Session", desc: "Finish one important work task", emoji: "🎯", duration: "25 min" },
-        { time: "09:45", title: "Quick Break", desc: "Take a short walk", emoji: "🚶", duration: "15 min" },
-        { time: "10:00", title: "Low-Budget Meal", desc: "Simple and healthy lunch idea", emoji: "🥗", duration: "30 min" },
-        { time: "10:30", title: "Review Progress", desc: "Check what is done and what can wait", emoji: "✅", duration: "15 min" }
-      ],
+    // Task suggestions with duration in minutes for scheduler
+    const taskSuggestions = {
       Study: [
-        { time: "09:00", title: "Warm-up Review", desc: "Read your notes for 10 minutes", emoji: "📖", duration: "10 min" },
-        { time: "09:15", title: "Deep Study Block", desc: "Focus on one difficult topic", emoji: "🧠", duration: "30 min" },
-        { time: "09:50", title: "Mini Quiz", desc: "Test yourself with 5 questions", emoji: "❓", duration: "15 min" },
-        { time: "10:10", title: "Break", desc: "Move away from the screen", emoji: "🚶", duration: "10 min" },
-        { time: "10:25", title: "Summary", desc: "Write three key takeaways", emoji: "✍️", duration: "15 min" }
+        { name: "Library Study Session", description: "Deep focus work at the library", time: 120, emoji: "📚", priority: 8 },
+        { name: "Online Course Module", description: "Complete one module of your online course", time: 60, emoji: "💻", priority: 7 },
+        { name: "Study Group Meeting", description: "Collaborate with peers on challenging topics", time: 90, emoji: "👥", priority: 6 },
+        { name: "Practice Problems", description: "Work through practice exercises and problems", time: 45, emoji: "✍️", priority: 7 },
+        { name: "Review and Summarize", description: "Review notes and create summary sheets", time: 30, emoji: "📝", priority: 5 }
       ],
       Health: [
-        { time: "09:00", title: "Hydration", desc: "Drink water and stretch", emoji: "💧", duration: "10 min" },
-        { time: "09:15", title: "Light Movement", desc: "Walk or do a short workout", emoji: "🏃", duration: "25 min" },
-        { time: "09:45", title: "Healthy Meal", desc: "Choose a simple balanced meal", emoji: "🥗", duration: "30 min" },
-        { time: "10:20", title: "Mental Reset", desc: "Five minutes of calm breathing", emoji: "🧘", duration: "5 min" }
+        { name: "Gym Workout", description: "Full body workout at the gym", time: 60, emoji: "💪", priority: 7 },
+        { name: "Yoga Class", description: "Attend a yoga or stretching class", time: 75, emoji: "🧘", priority: 6 },
+        { name: "Outdoor Run", description: "Go for a refreshing run in nature", time: 30, emoji: "🏃", priority: 6 },
+        { name: "Meal Prep Session", description: "Prepare healthy meals for the week", time: 90, emoji: "🥗", priority: 5 },
+        { name: "Meditation Practice", description: "Guided meditation for mental wellness", time: 20, emoji: "🧠", priority: 7 },
+        { name: "Swimming", description: "Low-impact cardio at the pool", time: 45, emoji: "🏊", priority: 6 }
       ],
       Social: [
-        { time: "09:00", title: "Check In", desc: "Message one person you care about", emoji: "💬", duration: "10 min" },
-        { time: "09:15", title: "Plan a Small Meet", desc: "Choose a low-pressure social activity", emoji: "👥", duration: "20 min" },
-        { time: "09:40", title: "Personal Time", desc: "Recharge before social interaction", emoji: "🌿", duration: "15 min" },
-        { time: "10:00", title: "Connect", desc: "Call, meet or send a thoughtful message", emoji: "☎️", duration: "20 min" }
-      ],
-      Finance: [
-        { time: "09:00", title: "Budget Check", desc: "Review today's spending limit", emoji: "💰", duration: "10 min" },
-        { time: "09:15", title: "Smart Choice", desc: "Pick one low-cost option for today", emoji: "🛒", duration: "15 min" },
-        { time: "09:35", title: "Avoid Waste", desc: "Use what you already have", emoji: "♻️", duration: "20 min" },
-        { time: "10:00", title: "Save Small", desc: "Set aside a tiny amount", emoji: "🏦", duration: "5 min" }
+        { name: "Visit Local Coffeeshop", description: "Enjoy a coffee and people-watch at a cozy local spot", time: 60, emoji: "☕", priority: 5 },
+        { name: "Evening Bar Meetup", description: "Casual drinks with friends at a neighborhood bar", time: 120, emoji: "🍺", priority: 4 },
+        { name: "Park Walk with Friend", description: "Take a relaxing walk and catch up with someone", time: 45, emoji: "🌳", priority: 6 },
+        { name: "Join Community Event", description: "Attend a local meetup or community gathering", time: 90, emoji: "🎉", priority: 5 },
+        { name: "Game Night", description: "Host or join a casual board game session", time: 150, emoji: "🎲", priority: 4 }
       ]
     };
 
@@ -1095,7 +1115,6 @@
       const mood = document.getElementById("mood").value;
       const goal = document.getElementById("goal").value;
       const time = document.getElementById("time").value;
-      const budget = document.getElementById("budget").value;
 
       document.getElementById("moodIcon").textContent = moodIcons[mood];
       document.getElementById("goalIcon").textContent = goalIcons[goal];
@@ -1105,13 +1124,12 @@
       if (goal === "Study") focusText = "Understand one hard topic";
       if (goal === "Health") focusText = "Protect your energy";
       if (goal === "Social") focusText = "Connect with someone";
-      if (goal === "Finance") focusText = "Spend smarter today";
       document.getElementById("phoneFocus").textContent = focusText;
 
-      updateMetrics(mood, goal, time, budget);
+      updateMetrics(mood, goal, time);
     }
 
-    function updateMetrics(mood, goal, time, budget) {
+    function updateMetrics(mood, goal, time) {
       let score = 82;
       let energy = "Medium";
       let insightTitle = "Light plan";
@@ -1134,21 +1152,9 @@
         insightText = "The best strategy is to start with one very easy task.";
       }
 
-      let budgetAmount = "₺45";
-      let budgetText = "Low-cost plan selected.";
-      if (budget === "Medium") {
-        budgetAmount = "₺120";
-        budgetText = "Balanced spending plan selected.";
-      } else if (budget === "Flexible") {
-        budgetAmount = "₺250";
-        budgetText = "Flexible plan with more options.";
-      }
-
       document.getElementById("scoreValue").textContent = score + "/100";
       document.getElementById("phoneScore").textContent = score;
       document.getElementById("energyValue").textContent = energy;
-      document.getElementById("budgetValue").textContent = budgetAmount;
-      document.getElementById("budgetText").textContent = budgetText;
       document.getElementById("insightTitle").textContent = insightTitle;
       document.getElementById("insightText").textContent = insightText;
 
@@ -1161,63 +1167,135 @@
       }
     }
 
+    function parseTimeToMinutes(timeStr) {
+      if (timeStr === "15 min") return 15;
+      if (timeStr === "1 hour") return 60;
+      if (timeStr === "Half day") return 240;
+      if (timeStr === "Full day") return 480;
+      return 60;
+    }
+
     function generatePlan() {
       const goal = document.getElementById("goal").value;
       const mood = document.getElementById("mood").value;
       const time = document.getElementById("time").value;
-      const budget = document.getElementById("budget").value;
 
-      currentPlan = [...plans[goal]];
-
-      if (mood === "Tired" || mood === "Unmotivated") {
-        currentPlan.unshift({
-          time: "08:50",
-          title: "Gentle Start",
-          desc: "Drink water and do one tiny action",
-          emoji: "💧",
-          duration: "5 min"
-        });
+      // Get task suggestions for the selected goal
+      const tasks = taskSuggestions[goal] || [];
+      
+      // Filter tasks based on available time
+      let filteredTasks = [...tasks];
+      const timeInMinutes = parseTimeToMinutes(time);
+      
+      // Adjust task selection based on available time
+      if (timeInMinutes <= 30) {
+        filteredTasks = tasks.filter(t => t.time <= 30);
+      } else if (timeInMinutes <= 60) {
+        filteredTasks = tasks.filter(t => t.time <= 60);
+      } else if (timeInMinutes <= 240) { // Half day
+        filteredTasks = tasks.filter(t => t.time <= 120);
       }
+      
+      // Adjust priority based on mood
+      filteredTasks = filteredTasks.map(task => {
+        let adjustedPriority = task.priority;
+        if (mood === "Tired" || mood === "Unmotivated") {
+          // Prefer shorter, easier tasks
+          if (task.time <= 30) adjustedPriority += 2;
+        } else if (mood === "Energetic") {
+          // Prefer longer, more intensive tasks
+          if (task.time >= 60) adjustedPriority += 2;
+        }
+        return { ...task, priority: adjustedPriority };
+      });
 
-      if (time === "15 min") {
-        currentPlan = currentPlan.slice(0, 2);
-      } else if (time === "1 hour") {
-        currentPlan = currentPlan.slice(0, 4);
-      }
+      // Add unique IDs to tasks
+      const tasksWithIds = filteredTasks.map((task, index) => ({
+        ...task,
+        id: `${goal.toLowerCase()}-${index}-${Date.now()}`
+      }));
 
-      if (budget === "Low" && goal !== "Finance") {
-        currentPlan.push({
-          time: "12:00",
-          title: "Low-Budget Choice",
-          desc: "Use what you already have before spending money",
-          emoji: "💸",
-          duration: "10 min"
-        });
-      }
-
-      renderTimeline();
+      // Schedule tasks using CalendarScheduler
+      scheduleTasksToCalendar(tasksWithIds);
+      
+      // Update the timeline view with scheduled tasks
+      updateTimelineView(tasksWithIds);
+      
+      // Update selections
       updateSelections();
     }
 
-    function renderTimeline() {
+    function scheduleTasksToCalendar(tasks) {
+      // Get existing events (if any)
+      const existingEvents = importedEvents || [];
+      
+      // Use priority-based scheduling
+      const result = scheduler.scheduleTasksPriority(tasks, existingEvents, new Date(), 7);
+      
+      // Display scheduled tasks
+      displayScheduledTasks(result.scheduled);
+      
+      // Show unscheduled tasks if any
+      if (result.unscheduled.length > 0) {
+        console.warn("Some tasks could not be scheduled:", result.unscheduled);
+        showUnscheduledWarning(result.unscheduled);
+      }
+      
+      // Store scheduled tasks
+      window.scheduledTasks = result.scheduled;
+    }
+
+    function displayScheduledTasks(scheduledTasks) {
+      const scheduleList = document.getElementById("scheduleList");
+      
+      // Clear existing schedule (except drop zone)
+      const dropZone = scheduleList.querySelector(".drop-zone");
+      scheduleList.innerHTML = "";
+      
+      // Add scheduled tasks
+      scheduledTasks.forEach(task => {
+        const block = document.createElement("div");
+        block.className = "schedule-block block-blue";
+        
+        const startTime = task.scheduledStart.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        });
+        
+        block.innerHTML = `${task.emoji} ${task.name} <span>${startTime}</span>`;
+        scheduleList.appendChild(block);
+      });
+      
+      // Re-add drop zone at the end
+      if (dropZone) {
+        scheduleList.appendChild(dropZone);
+      }
+    }
+
+    function updateTimelineView(tasks) {
       const timelineList = document.getElementById("timelineList");
-      timelineList.innerHTML = currentPlan.map(function (item) {
-        return `
-          <div class="timeline-item">
-            <div class="timeline-time">${item.time}</div>
-            <div class="timeline-card">
-              <div class="timeline-info">
-                <div class="timeline-emoji">${item.emoji}</div>
-                <div>
-                  <h4>${item.title}</h4>
-                  <p>${item.desc}</p>
-                </div>
+      
+      timelineList.innerHTML = tasks.map(task => `
+        <div class="timeline-item">
+          <div class="timeline-time">Suggested</div>
+          <div class="timeline-card">
+            <div class="timeline-info">
+              <div class="timeline-emoji">${task.emoji}</div>
+              <div>
+                <h4>${task.name}</h4>
+                <p>${task.description}</p>
               </div>
-              <span class="duration">${item.duration}</span>
             </div>
+            <span class="duration">${task.time} min</span>
           </div>
-        `;
-      }).join("");
+        </div>
+      `).join("");
+    }
+
+    function showUnscheduledWarning(unscheduledTasks) {
+      // Optional: Show a notification to the user
+      console.log("Could not schedule these tasks:", unscheduledTasks.map(t => t.name));
     }
 
     function addActivity(title, time, emoji) {
@@ -1246,7 +1324,322 @@
     function scrollToPlanner() {
       document.getElementById("planner").scrollIntoView({ behavior: "smooth" });
     }
+
+    // ==================== TASK MANAGEMENT FUNCTIONS ====================
+
+    // Load tasks from localStorage on page load
+    function loadTasks() {
+      const saved = localStorage.getItem('lifepilot_tasks');
+      if (saved) {
+        manualTasks = JSON.parse(saved);
+        renderTasksList();
+      }
+    }
+
+    // Save tasks to localStorage
+    function saveTasks() {
+      localStorage.setItem('lifepilot_tasks', JSON.stringify(manualTasks));
+    }
+
+    // Add a new manual task
+    function addManualTask() {
+      const nameInput = document.getElementById('taskName');
+      const durationInput = document.getElementById('taskDuration');
+      const deadlineInput = document.getElementById('taskDeadline');
+
+      const name = nameInput.value.trim();
+      const duration = parseInt(durationInput.value);
+      const deadline = deadlineInput.value;
+
+      // Validation
+      if (!name) {
+        showMessage('Please enter a task name', 'error');
+        nameInput.focus();
+        return;
+      }
+
+      if (!duration || duration <= 0) {
+        showMessage('Please enter a valid duration (positive number)', 'error');
+        durationInput.focus();
+        return;
+      }
+
+      // Create task object
+      const task = {
+        id: Date.now(),
+        name: name,
+        time: duration,
+        deadline: deadline || null,
+        status: 'pending',
+        scheduledStart: null,
+        scheduledEnd: null
+      };
+
+      // Add to tasks array
+      manualTasks.push(task);
+      saveTasks();
+      renderTasksList();
+
+      // Clear form
+      nameInput.value = '';
+      durationInput.value = '';
+      deadlineInput.value = '';
+
+      showMessage(`Task "${name}" added successfully! 🎉`, 'success');
+    }
+
+    // Delete a task
+    function deleteTask(taskId) {
+      if (confirm('Are you sure you want to delete this task?')) {
+        manualTasks = manualTasks.filter(task => task.id !== taskId);
+        saveTasks();
+        renderTasksList();
+        showMessage('Task deleted', 'success');
+      }
+    }
+
+    // Render tasks list
+    function renderTasksList() {
+      const tasksList = document.getElementById('tasksList');
+      
+      if (manualTasks.length === 0) {
+        tasksList.innerHTML = `
+          <div style="text-align: center; padding: 30px; color: var(--muted); font-size: 0.9rem;">
+            No tasks yet. Add your first task above!
+          </div>
+        `;
+        return;
+      }
+
+      tasksList.innerHTML = manualTasks.map(task => {
+        const deadlineText = task.deadline ? new Date(task.deadline).toLocaleDateString() : 'No deadline';
+        const statusColor = task.status === 'scheduled' ? '#24a148' : task.status === 'pending' ? '#ff832b' : '#6b7280';
+        const statusIcon = task.status === 'scheduled' ? '✅' : task.status === 'pending' ? '⏳' : '📋';
+        
+        return `
+          <div class="activity-card" style="border-left: 4px solid ${statusColor};">
+            <div class="activity-left">
+              <div class="activity-emoji">${statusIcon}</div>
+              <div>
+                <h4>${task.name}</h4>
+                <p>${task.time} min • ${deadlineText}</p>
+              </div>
+            </div>
+            <button class="plus-btn" onclick="deleteTask(${task.id})" style="background: #fee; color: #da1e28;">×</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Schedule all tasks using CalendarScheduler
+    function scheduleAllTasks() {
+      if (manualTasks.length === 0) {
+        showMessage('No tasks to schedule. Add some tasks first!', 'error');
+        return;
+      }
+
+      showMessage('Scheduling tasks... ⏳', 'info');
+
+      // Get only pending tasks
+      const pendingTasks = manualTasks.filter(task => task.status === 'pending');
+
+      if (pendingTasks.length === 0) {
+        showMessage('All tasks are already scheduled!', 'info');
+        return;
+      }
+
+      // Schedule tasks using the scheduler
+      const result = scheduler.scheduleTasksFirstFit(
+        pendingTasks,
+        importedEvents,
+        new Date(),
+        7 // Look ahead 7 days
+      );
+
+      // Update task statuses
+      result.scheduled.forEach(scheduledTask => {
+        const task = manualTasks.find(t => t.id === scheduledTask.id);
+        if (task) {
+          task.status = 'scheduled';
+          task.scheduledStart = scheduledTask.scheduledStart;
+          task.scheduledEnd = scheduledTask.scheduledEnd;
+        }
+      });
+
+      saveTasks();
+      renderTasksList();
+      displayScheduledTasks(result.scheduled, result.unscheduled);
+
+      // Show results
+      if (result.scheduled.length > 0 && result.unscheduled.length === 0) {
+        showMessage(`✅ All ${result.scheduled.length} tasks scheduled successfully!`, 'success');
+      } else if (result.scheduled.length > 0) {
+        showMessage(`⚠️ ${result.scheduled.length} tasks scheduled, ${result.unscheduled.length} couldn't fit`, 'warning');
+      } else {
+        showMessage(`❌ No tasks could be scheduled. Try adjusting deadlines or durations.`, 'error');
+      }
+
+      // Update timeline with scheduled tasks
+      updateTimelineWithTasks(result.scheduled);
+    }
+
+    // Display scheduled and unscheduled tasks
+    function displayScheduledTasks(scheduled, unscheduled) {
+      // Scheduled tasks
+      const scheduledSection = document.getElementById('scheduledTasksSection');
+      const scheduledList = document.getElementById('scheduledTasksList');
+      
+      if (scheduled.length > 0) {
+        scheduledSection.style.display = 'block';
+        scheduledList.innerHTML = scheduled.map(task => {
+          const startTime = task.scheduledStart.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          
+          return `
+            <div class="activity-card" style="border-left: 4px solid #24a148;">
+              <div class="activity-left">
+                <div class="activity-emoji">✅</div>
+                <div>
+                  <h4>${task.name}</h4>
+                  <p>${task.time} min • ${startTime}</p>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        scheduledSection.style.display = 'none';
+      }
+
+      // Unscheduled tasks
+      const unscheduledSection = document.getElementById('unscheduledTasksSection');
+      const unscheduledList = document.getElementById('unscheduledTasksList');
+      
+      if (unscheduled.length > 0) {
+        unscheduledSection.style.display = 'block';
+        unscheduledList.innerHTML = unscheduled.map(task => {
+          const deadlineText = task.deadline ? new Date(task.deadline).toLocaleDateString() : 'No deadline';
+          
+          return `
+            <div class="activity-card" style="border-left: 4px solid #da1e28;">
+              <div class="activity-left">
+                <div class="activity-emoji">⚠️</div>
+                <div>
+                  <h4>${task.name}</h4>
+                  <p>${task.time} min • Deadline: ${deadlineText}</p>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        unscheduledSection.style.display = 'none';
+      }
+    }
+
+    // Update timeline with scheduled tasks
+    function updateTimelineWithTasks(scheduledTasks) {
+      if (scheduledTasks.length === 0) return;
+
+      // Convert scheduled tasks to timeline format
+      const taskItems = scheduledTasks.map(task => ({
+        time: task.scheduledStart.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        title: task.name,
+        desc: `Scheduled task - ${task.time} minutes`,
+        emoji: '📋',
+        duration: `${task.time} min`
+      }));
+
+      // Merge with current plan and sort by time
+      currentPlan = [...currentPlan, ...taskItems].sort((a, b) => {
+        const timeA = a.time.includes(':') ? a.time : '00:00';
+        const timeB = b.time.includes(':') ? b.time : '00:00';
+        return timeA.localeCompare(timeB);
+      });
+
+      renderTimeline();
+    }
+
+    // Handle ICS file import
+    function handleICSImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const icsContent = e.target.result;
+          importedEvents = scheduler.parseICalendar(icsContent);
+          
+          const statusDiv = document.getElementById('importStatus');
+          statusDiv.innerHTML = `<span style="color: #24a148;">✅ Imported ${importedEvents.length} events</span>`;
+          
+          showMessage(`Successfully imported ${importedEvents.length} calendar events!`, 'success');
+        } catch (error) {
+          const statusDiv = document.getElementById('importStatus');
+          statusDiv.innerHTML = `<span style="color: #da1e28;">❌ Error importing file</span>`;
+          showMessage('Error importing calendar file. Please check the file format.', 'error');
+          console.error('ICS Import Error:', error);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Show message to user
+    function showMessage(message, type = 'info') {
+      const colors = {
+        success: '#24a148',
+        error: '#da1e28',
+        warning: '#ff832b',
+        info: '#0f62fe'
+      };
+
+      const messageDiv = document.createElement('div');
+      messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        color: ${colors[type]};
+        padding: 16px 24px;
+        border-radius: 12px;
+        border-left: 4px solid ${colors[type]};
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        z-index: 10000;
+        font-weight: 600;
+        max-width: 400px;
+        animation: slideIn 0.3s ease;
+      `;
+      messageDiv.textContent = message;
+      document.body.appendChild(messageDiv);
+
+      setTimeout(() => {
+        messageDiv.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => messageDiv.remove(), 300);
+      }, 3000);
+    }
+
+    // Initialize on page load
+    document.addEventListener("DOMContentLoaded", function () {
+      loadTasks();
+      updateSelections();
+      generatePlan();
+    });
   </script>
+  <style>
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(400px); opacity: 0; }
+    }
+  </style>
 </body>
 </html>
  

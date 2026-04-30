@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifePilot - Your Daily Decision Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        /* Questionnaire Styles */
+        .question-group {
+            margin-bottom: 20px;
+        }
+
+        .question-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .question-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .question-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Recommendation Styles */
+        .recommendation {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .recommendation.show {
+            display: block;
+        }
+
+        .recommendation h3 {
+            margin-bottom: 10px;
+        }
+
+        .life-score {
+            font-size: 2em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Todo List Styles */
+        .todo-input-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .todo-input-group input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .todo-input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-add {
+            background: #4caf50;
+            padding: 12px 20px;
+        }
+
+        .btn-add:hover {
+            background: #45a049;
+        }
+
+        .task-list {
+            margin-top: 20px;
+        }
+
+        .task-item {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .task-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .task-meta {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-small:hover {
+            opacity: 0.8;
+        }
+
+        .btn-edit {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-move {
+            background: #ff9800;
+            color: white;
+        }
+
+        /* Calendar Styles */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calendar-day {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            min-height: 120px;
+        }
+
+        .calendar-day-header {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .calendar-task {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            font-size: 0.85em;
+        }
+
+        .calendar-task-name {
+            font-weight: 600;
+        }
+
+        .calendar-task-time {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+
+        .unscheduled-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .unscheduled-section h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .unscheduled-task {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            border-left: 3px solid #ffc107;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .todo-input-group {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        .ibm-footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .ibm-footer p {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧭 LifePilot</h1>
+            <p>Your Daily Decision Assistant - Make Life Easier</p>
+        </header>
+
+        <!-- Questionnaire Section -->
+        <div class="section">
+            <h2>📋 Tell Us About Your Day</h2>
+            <div class="question-group">
+                <label for="mood">How do you feel today?</label>
+                <select id="mood">
+                    <option value="">Select your mood...</option>
+                    <option value="energetic">⚡ Energetic</option>
+                    <option value="tired">😴 Tired</option>
+                    <option value="stressed">😰 Stressed</option>
+                    <option value="unmotivated">😐 Unmotivated</option>
+                </select>
+            </div>
+
+            <div class="question-group">
+                <label for="goal">What is your main goal today?</label>
+                <select id="goal">
+                    <option value="">Select your goal...</option>
+                    <option value="study">📚 Study</option>
+                    <option value="work">💼 Work</option>
+                    <option value="health">🏃 Health</option>
+                    <option value="money">💰 Money</option>
+                    <option value="social">👥 Social Life</option>
+                </select>
+            </div>
+
+            <div class="question-group">
+                <label for="time">How much time do you have?</label>
+                <select id="time">
+                    <option value="">Select available time...</option>
+                    <option value="15min">⏱️ 15 minutes</option>
+                    <option value="1hr">⏰ 1 hour</option>
+                    <option value="halfday">🕐 Half day</option>
+                    <option value="fullday">📅 Full day</option>
+                </select>
+            </div>
+
+            <div class="question-group">
+                <label for="budget">What is your budget?</label>
+                <select id="budget">
+                    <option value="">Select your budget...</option>
+                    <option value="low">💵 Low</option>
+                    <option value="medium">💵💵 Medium</option>
+                    <option value="flexible">💵💵💵 Flexible</option>
+                </select>
+            </div>
+
+            <button class="btn" onclick="generatePlan()">Generate My Plan</button>
+
+            <div id="recommendation" class="recommendation">
+                <h3>✨ Your Personalized Plan</h3>
+                <p id="recommendationText"></p>
+                <div class="life-score">
+                    Life Ease Score: <span id="lifeScore">0</span>/100
+                </div>
+            </div>
+        </div>
+
+        <!-- Todo List Section -->
+        <div class="section">
+            <h2>✅ My Tasks</h2>
+            <div class="todo-input-group">
+                <input type="text" id="taskName" placeholder="Task name...">
+                <input type="number" id="taskTime" placeholder="Time (min)" min="1">
+                <input type="date" id="taskDeadline">
+                <button class="btn btn-add" onclick="addTask()">Add Task</button>
+            </div>
+
+            <div id="taskList" class="task-list"></div>
+        </div>
+
+        <!-- Calendar Section -->
+        <div class="section">
+            <h2>📅 Weekly Calendar</h2>
+            <div id="calendar" class="calendar-grid"></div>
+            <div id="unscheduled" class="unscheduled-section" style="display: none;">
+                <h3>📌 Unscheduled Tasks</h3>
+                <div id="unscheduledList"></div>
+            </div>
+        </div>
+
+        <div class="ibm-footer">
+            <p><strong>Powered by IBM-inspired Decision Intelligence</strong></p>
+            <p>IBM technologies help companies solve complex problems. With LifePilot, we bring the same idea to everyday life: helping individuals make smarter, faster, and more personal daily decisions.</p>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let tasks = JSON.parse(localStorage.getItem('lifepilot_tasks')) || [];
+        let editingTaskId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTasks();
+            renderCalendar();
+        });
+
+        // Generate personalized plan
+        function generatePlan() {
+            const mood = document.getElementById('mood').value;
+            const goal = document.getElementById('goal').value;
+            const time = document.getElementById('time').value;
+            const budget = document.getElementById('budget').value;
+
+            if (!mood || !goal || !time || !budget) {
+                alert('Please answer all questions!');
+                return;
+            }
+
+            const recommendations = {
+                energetic: {
+                    study: "Tackle your most challenging study material first while your energy is high!",
+                    work: "Perfect time for creative work and important meetings!",
+                    health: "Go for an intense workout or try a new sport!",
+                    money: "Review your investments and plan your financial goals!",
+                    social: "Organize a group activity or reach out to friends!"
+                },
+                tired: {
+                    study: "Focus on review and light reading. Take frequent breaks.",
+                    work: "Handle routine tasks and emails. Save complex work for later.",
+                    health: "Try gentle yoga or a relaxing walk.",
+                    money: "Simple budgeting tasks only. Avoid major financial decisions.",
+                    social: "Enjoy quiet time with close friends or family."
+                },
+                stressed: {
+                    study: "Break study sessions into 25-minute chunks with breaks.",
+                    work: "Prioritize urgent tasks. Delegate when possible.",
+                    health: "Meditation, breathing exercises, or a calming walk.",
+                    money: "Avoid financial decisions when stressed. Focus on tracking only.",
+                    social: "Connect with supportive friends or take alone time."
+                },
+                unmotivated: {
+                    study: "Start with the easiest topic to build momentum.",
+                    work: "Begin with a quick win task to boost motivation.",
+                    health: "Just 10 minutes of movement. Something is better than nothing!",
+                    money: "Set one small financial goal for today.",
+                    social: "Send a quick message to someone you care about."
+                }
+            };
+
+            const timeAdvice = {
+                '15min': "Quick action: ",
+                '1hr': "Focused session: ",
+                'halfday': "Structured approach: ",
+                'fullday': "Comprehensive plan: "
+            };
+
+            const budgetAdvice = {
+                low: "Choose free or low-cost options.",
+                medium: "Balance quality and cost.",
+                flexible: "Invest in quality experiences."
+            };
+
+            const recommendation = timeAdvice[time] + recommendations[mood][goal] + " " + budgetAdvice[budget];
+            
+            // Calculate Life Ease Score
+            const score = calculateLifeScore(mood, time, tasks.length);
+
+            document.getElementById('recommendationText').textContent = recommendation;
+            document.getElementById('lifeScore').textContent = score;
+            document.getElementById('recommendation').classList.add('show');
+        }
+
+        function calculateLifeScore(mood, time, taskCount) {
+            let score = 50; // Base score
+            
+            // Mood impact
+            if (mood === 'energetic') score += 20;
+            else if (mood === 'tired') score -= 10;
+            else if (mood === 'stressed') score -= 15;
+            else if (mood === 'unmotivated') score -= 5;
+            
+            // Time availability impact
+            if (time === 'fullday') score += 15;
+            else if (time === 'halfday') score += 10;
+            else if (time === '1hr') score += 5;
+            
+            // Task management impact
+            if (taskCount > 0 && taskCount <= 5) score += 15;
+            else if (taskCount > 5) score -= 5;
+            
+            return Math.max(0, Math.min(100, score));
+        }
+
+        // Task management
+        function addTask() {
+            const name = document.getElementById('taskName').value.trim();
+            const time = document.getElementById('taskTime').value;
+            const deadline = document.getElementById('taskDeadline').value;
+
+            if (!name) {
+                alert('Please enter a task name!');
+                return;
+            }
+
+            if (!time) {
+                alert('Please enter time cost!');
+                return;
+            }
+
+            if (editingTaskId !== null) {
+                // Update existing task
+                const taskIndex = tasks.findIndex(t => t.id === editingTaskId);
+                tasks[taskIndex] = {
+                    ...tasks[taskIndex],
+                    name,
+                    time: parseInt(time),
+                    deadline: deadline || null
+                };
+                editingTaskId = null;
+                document.querySelector('.btn-add').textContent = 'Add Task';
+            } else {
+                // Add new task
+                const task = {
+                    id: Date.now(),
+                    name,
+                    time: parseInt(time),
+                    deadline: deadline || null
+                };
+                tasks.push(task);
+            }
+
+            saveTasks();
+            clearInputs();
+            renderTasks();
+            renderCalendar();
+        }
+
+        function editTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                document.getElementById('taskName').value = task.name;
+                document.getElementById('taskTime').value = task.time;
+                document.getElementById('taskDeadline').value = task.deadline || '';
+                editingTaskId = id;
+                document.querySelector('.btn-add').textContent = 'Update Task';
+            }
+        }
+
+        function deleteTask(id) {
+            if (confirm('Are you sure you want to delete this task?')) {
+                tasks = tasks.filter(t => t.id !== id);
+                saveTasks();
+                renderTasks();
+                renderCalendar();
+            }
+        }
+
+        function moveTask(id, direction) {
+            const index = tasks.findIndex(t => t.id === id);
+            if (direction === 'up' && index > 0) {
+                [tasks[index], tasks[index - 1]] = [tasks[index - 1], tasks[index]];
+            } else if (direction === 'down' && index < tasks.length - 1) {
+                [tasks[index], tasks[index + 1]] = [tasks[index + 1], tasks[index]];
+            }
+            saveTasks();
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            
+            if (tasks.length === 0) {
+                taskList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No tasks yet. Add your first task above!</p>';
+                return;
+            }
+
+            taskList.innerHTML = tasks.map((task, index) => `
+                <div class="task-item">
+                    <div class="task-info">
+                        <div class="task-name">${task.name}</div>
+                        <div class="task-meta">
+                            ⏱️ ${task.time} min
+                            ${task.deadline ? `| 📅 ${formatDate(task.deadline)}` : '| No deadline'}
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        ${index > 0 ? `<button class="btn-small btn-move" onclick="moveTask(${task.id}, 'up')">↑</button>` : ''}
+                        ${index < tasks.length - 1 ? `<button class="btn-small btn-move" onclick="moveTask(${task.id}, 'down')">↓</button>` : ''}
+                        <button class="btn-small btn-edit" onclick="editTask(${task.id})">Edit</button>
+                        <button class="btn-small btn-delete" onclick="deleteTask(${task.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCalendar() {
+            const calendar = document.getElementById('calendar');
+            const unscheduledSection = document.getElementById('unscheduled');
+            const unscheduledList = document.getElementById('unscheduledList');
+            
+            // Get current week
+            const today = new Date();
+            const currentDay = today.getDay();
+            const monday = new Date(today);
+            monday.setDate(today.getDate() - currentDay + (currentDay === 0 ? -6 : 1));
+            
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const weekDates = [];
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(monday);
+                date.setDate(monday.getDate() + i);
+                weekDates.push(date);
+            }
+
+            // Render calendar days
+            calendar.innerHTML = weekDates.map((date, index) => {
+                const dateStr = date.toISOString().split('T')[0];
+                const dayTasks = tasks.filter(t => t.deadline === dateStr);
+                
+                return `
+                    <div class="calendar-day">
+                        <div class="calendar-day-header">
+                            ${days[index]}<br>
+                            ${date.getDate()}/${date.getMonth() + 1}
+                        </div>
+                        ${dayTasks.map(task => `
+                            <div class="calendar-task">
+                                <div class="calendar-task-name">${task.name}</div>
+                                <div class="calendar-task-time">${task.time} min</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }).join('');
+
+            // Render unscheduled tasks
+            const unscheduledTasks = tasks.filter(t => !t.deadline);
+            if (unscheduledTasks.length > 0) {
+                unscheduledSection.style.display = 'block';
+                unscheduledList.innerHTML = unscheduledTasks.map(task => `
+                    <div class="unscheduled-task">
+                        <strong>${task.name}</strong> - ${task.time} min
+                    </div>
+                `).join('');
+            } else {
+                unscheduledSection.style.display = 'none';
+            }
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function clearInputs() {
+            document.getElementById('taskName').value = '';
+            document.getElementById('taskTime').value = '';
+            document.getElementById('taskDeadline').value = '';
+        }
+
+        function saveTasks() {
+            localStorage.setItem('lifepilot_tasks', JSON.stringify(tasks));
+        }
+    </script>
+</body>
+</html>

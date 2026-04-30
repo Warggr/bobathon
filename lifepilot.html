@@ -378,13 +378,12 @@
 
       document.getElementById("moodIcon").textContent = moodIcons[mood];
       document.getElementById("goalIcon").textContent = goalIcons[goal];
-      document.getElementById("phoneMood").textContent = moodIcons[mood] + " " + mood;
 
       let focusText = "Finish project presentation";
       if (goal === "Study") focusText = "Understand one hard topic";
       if (goal === "Health") focusText = "Protect your energy";
       if (goal === "Social") focusText = "Connect with someone";
-      document.getElementById("phoneFocus").textContent = focusText;
+      //document.getElementById("phoneFocus").textContent = focusText;
 
       updateMetrics(mood, goal, time);
     }
@@ -413,7 +412,7 @@
       }
 
       document.getElementById("scoreValue").textContent = score + "/100";
-      document.getElementById("phoneScore").textContent = score;
+      //document.getElementById("phoneScore").textContent = score;
       document.getElementById("energyValue").textContent = energy;
       document.getElementById("insightTitle").textContent = insightTitle;
       document.getElementById("insightText").textContent = insightText;

@@ -14,53 +14,14 @@
         <span>LifePilot</span>
       </div>
       <div class="nav-links">
-        <a href="index.html">🏠 Home</a>
-        <a href="#planner">Planner</a>
+        <a href="index.html">Home</a>
+        <a href="lifepilot.html">Planner</a>
+        <a href="about-us.html">About Us</a>
         <a href="#insights">Insights</a>
         <a href="#save-day">Save My Day</a>
       </div>
-      <button class="nav-btn" onclick="scrollToPlanner()">Get Started</button>
+      <button class="nav-btn">Get Started</button>
     </nav>
-
-    <section class="hero">
-      <div class="hero-card fade-in">
-        <div class="tag">✨ AI-powered daily planning</div>
-        <h1>Your day.<br />Planned smarter.</h1>
-        <p>
-          LifePilot helps you make better daily decisions with personalized suggestions based on your mood, time, and goals.
-        </p>
-        <div class="hero-actions">
-          <button class="primary-btn" onclick="scrollToPlanner()">Start Your Day</button>
-          <button class="secondary-btn" onclick="generatePlan()">▶ See Demo</button>
-        </div>
-      </div>
-
-      <div class="phone-card fade-in">
-        <div class="phone">
-          <div class="phone-notch"></div>
-          <h3>Good morning, Ece! ☀️</h3>
-          <p>Ready to plan your best day?</p>
-
-          <div class="mini-card">
-            <p><strong>Life Ease Score</strong></p>
-            <div class="score-row">
-              <div><span class="score-number" id="phoneScore">82</span><span> /100</span></div>
-              <div class="ring"></div>
-            </div>
-          </div>
-
-          <div class="mini-card">
-            <p><strong>Today's Focus</strong></p>
-            <p id="phoneFocus">Finish project presentation</p>
-          </div>
-
-          <div class="mini-card">
-            <p><strong>Current Mood</strong></p>
-            <p id="phoneMood">😟 Stressed</p>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <section class="grid-main" id="planner">
       <div class="section fade-in">
@@ -667,10 +628,6 @@
 
     function savePlan() {
       alert("Your LifePilot plan has been saved! ✅");
-    }
-
-    function scrollToPlanner() {
-      document.getElementById("planner").scrollIntoView({ behavior: "smooth" });
     }
 
     // ==================== TASK MANAGEMENT FUNCTIONS ====================

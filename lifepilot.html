@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LifePilot - Daily Decision Assistant</title>
+  <title>LifePilot - Smart Task Scheduler</title>
   <style>
     * {
       margin: 0;
@@ -14,672 +14,207 @@
     :root {
       --blue: #0f62fe;
       --blue-dark: #0043ce;
+      --blue-light: #edf5ff;
       --navy: #161616;
       --text: #1f2937;
       --muted: #6b7280;
-      --bg: #f4f7fb;
-      --card: #ffffff;
       --border: #e5e7eb;
       --green: #24a148;
       --orange: #ff832b;
       --red: #da1e28;
       --purple: #8b5cf6;
-      --shadow: 0 18px 45px rgba(15, 98, 254, 0.12);
+      --card: #ffffff;
     }
 
     body {
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(15, 98, 254, 0.18), transparent 32%),
-        linear-gradient(135deg, #f8fbff 0%, #eef4ff 45%, #f7f7fb 100%);
+      background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 45%, #f7f7fb 100%);
       min-height: 100vh;
       color: var(--text);
-      padding: 22px;
+      padding: 20px;
     }
 
     .container {
-      max-width: 1260px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
-    .navbar {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 16px 22px;
+    .header {
+      background: white;
+      border-radius: 20px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      box-shadow: 0 10px 30px rgba(17, 24, 39, 0.06);
-      margin-bottom: 22px;
+      align-items: center;
     }
 
     .logo {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-size: 1.35rem;
+      font-size: 1.5rem;
       font-weight: 800;
       color: var(--navy);
     }
 
     .logo-icon {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       display: grid;
       place-items: center;
-      border-radius: 15px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
       color: white;
-      background: linear-gradient(135deg, var(--blue), #7c3aed);
-      box-shadow: 0 10px 20px rgba(15, 98, 254, 0.25);
+      font-size: 1.2rem;
     }
 
-    .nav-links {
-      display: flex;
-      gap: 28px;
+    .tagline {
       color: var(--muted);
-      font-weight: 650;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      color: var(--navy);
+    }
+
+    .card .subtitle {
+      color: var(--muted);
+      margin-bottom: 24px;
       font-size: 0.95rem;
     }
 
-    .nav-links a {
-      color: inherit;
-      text-decoration: none;
-      cursor: pointer;
-      transition: color 0.2s ease;
-    }
-
-    .nav-links a:hover {
-      color: var(--blue);
-    }
-
-    .nav-links a.active {
-      color: var(--blue);
-    }
-
-    .nav-btn {
-      border: none;
-      background: var(--blue);
-      color: white;
-      font-weight: 750;
-      padding: 12px 18px;
-      border-radius: 14px;
-      cursor: pointer;
-      box-shadow: 0 12px 25px rgba(15, 98, 254, 0.25);
-      transition: all 0.2s ease;
-    }
-
-    .nav-btn:hover {
-      transform: translateY(-2px);
-      filter: brightness(0.98);
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      gap: 22px;
-      margin-bottom: 22px;
-    }
-
-    .hero-card,
-    .phone-card,
-    .section {
-      background: rgba(255, 255, 255, 0.92);
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-    }
-
-    .hero-card {
-      padding: 46px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      right: -120px;
-      top: -120px;
-      width: 340px;
-      height: 340px;
-      background: radial-gradient(circle, rgba(15, 98, 254, 0.18), transparent 65%);
-      border-radius: 50%;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #edf5ff;
-      color: var(--blue);
-      border: 1px solid #d0e2ff;
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-weight: 750;
-      margin-bottom: 22px;
-      font-size: 0.92rem;
-    }
-
-    .hero h1 {
-      font-size: clamp(2.4rem, 5vw, 4.9rem);
-      line-height: 1.02;
-      color: #081a3a;
-      letter-spacing: -2px;
-      margin-bottom: 20px;
-    }
-
-    .hero p {
-      color: var(--muted);
-      font-size: 1.12rem;
-      line-height: 1.75;
-      max-width: 590px;
-      margin-bottom: 28px;
-    }
-
-    .hero-actions {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .primary-btn,
-    .secondary-btn,
-    .dark-btn {
-      border: none;
-      border-radius: 16px;
-      padding: 15px 22px;
-      font-size: 1rem;
-      font-weight: 800;
-      cursor: pointer;
-      transition: 0.22s ease;
-    }
-
-    .primary-btn {
-      background: linear-gradient(135deg, var(--blue), #4f46e5);
-      color: white;
-      box-shadow: 0 14px 28px rgba(15, 98, 254, 0.28);
-    }
-
-    .secondary-btn {
-      background: white;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .dark-btn {
-      background: #111827;
-      color: white;
-    }
-
-    .primary-btn:hover,
-    .secondary-btn:hover,
-    .dark-btn:hover {
-      transform: translateY(-2px);
-      filter: brightness(0.98);
-    }
-
-    .phone-card {
-      padding: 26px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .phone-card::before {
-      content: "";
-      position: absolute;
-      width: 340px;
-      height: 340px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, rgba(15, 98, 254, 0.14), rgba(139, 92, 246, 0.14));
-      filter: blur(18px);
-    }
-
-    .phone {
-      width: 310px;
-      border: 10px solid #c7d2fe;
-      background: white;
-      border-radius: 42px;
-      padding: 22px;
-      position: relative;
-      box-shadow: 0 30px 60px rgba(17, 24, 39, 0.16);
-    }
-
-    .phone-notch {
-      width: 82px;
-      height: 8px;
-      background: #c7d2fe;
-      border-radius: 999px;
-      margin: 0 auto 24px;
-    }
-
-    .phone h3 {
-      font-size: 1.25rem;
-      margin-bottom: 6px;
-    }
-
-    .phone p {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .mini-card {
-      margin-top: 16px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 16px;
-      background: #fbfdff;
-    }
-
-    .score-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-    }
-
-    .score-number {
-      font-size: 2.4rem;
-      font-weight: 900;
-      color: #081a3a;
-    }
-
-    .ring {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      border: 9px solid #e5e7eb;
-      border-top-color: var(--blue);
-      border-right-color: var(--blue);
-    }
-
-    .grid-main {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 22px;
-      margin-bottom: 22px;
-    }
-
-    .section {
-      padding: 28px;
-      margin-bottom: 22px;
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-
-    .section h2 {
-      color: #081a3a;
-      font-size: 1.75rem;
-      margin-bottom: 6px;
-    }
-
-    .section .subtitle {
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .question-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-
-    .question-card {
-      border: 2px solid var(--border);
-      border-radius: 22px;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.2s ease;
-      background: white;
-      min-height: 180px;
+    /* Task Input Form */
+    .task-form {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .question-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 25px rgba(17, 24, 39, 0.08);
-      border-color: #a6c8ff;
-    }
-
-    .question-card.active {
-      border-color: var(--blue);
-      background: #f5f9ff;
-    }
-
-    .question-card h4 {
-      font-size: 0.95rem;
-      color: #111827;
-      margin-bottom: 12px;
-    }
-
-    .big-icon {
-      font-size: 3rem;
-      margin-bottom: 14px;
-    }
-
-    .question-card select {
-      width: 100%;
-      padding: 11px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      font-weight: 700;
-      color: var(--text);
-      background: white;
-      cursor: pointer;
-    }
-
-    .generate-btn {
-      width: 100%;
-      max-width: 460px;
-      display: block;
-      margin: 8px auto 0;
-    }
-
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
       gap: 16px;
     }
 
-    .metric-card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 22px;
-      box-shadow: 0 8px 18px rgba(17, 24, 39, 0.04);
-      min-height: 150px;
-    }
-
-    .metric-top {
+    .form-group {
       display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 14px;
-      color: var(--muted);
-      font-weight: 800;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .metric-icon {
-      width: 38px;
-      height: 38px;
-      display: grid;
-      place-items: center;
-      border-radius: 14px;
-      background: #edf5ff;
-      color: var(--blue);
-    }
-
-    .metric-value {
-      font-size: 2rem;
-      font-weight: 900;
-      color: #081a3a;
-    }
-
-    .metric-card p {
-      margin-top: 8px;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .timeline-layout {
-      display: grid;
-      grid-template-columns: 210px 1fr;
-      gap: 0;
-      overflow: hidden;
-      padding: 0;
-    }
-
-    .sidebar {
-      background: #f8fbff;
-      border-right: 1px solid var(--border);
-      padding: 24px;
-    }
-
-    .sidebar .logo {
-      font-size: 1.1rem;
-      margin-bottom: 28px;
-    }
-
-    .side-menu {
-      display: grid;
-      gap: 10px;
-    }
-
-    .side-menu div {
-      padding: 13px 14px;
-      border-radius: 14px;
-      color: var(--muted);
-      font-weight: 750;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .side-menu div:hover {
-      background: rgba(255, 255, 255, 0.5);
-    }
-
-    .side-menu div.active {
-      background: white;
-      color: var(--blue);
-      box-shadow: 0 8px 18px rgba(17, 24, 39, 0.05);
-    }
-
-    .timeline-content {
-      padding: 28px;
-    }
-
-    .timeline-list {
-      display: grid;
-      gap: 16px;
-    }
-
-    .timeline-item {
-      display: grid;
-      grid-template-columns: 62px 1fr;
-      gap: 18px;
-      align-items: stretch;
-    }
-
-    .timeline-time {
-      color: var(--muted);
+    .form-group label {
+      font-weight: 600;
       font-size: 0.9rem;
-      font-weight: 750;
-      padding-top: 18px;
+      color: var(--text);
     }
 
-    .timeline-card {
-      position: relative;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 16px;
-      background: white;
-      box-shadow: 0 8px 20px rgba(17, 24, 39, 0.04);
-      transition: 0.2s ease;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .timeline-card:hover {
-      transform: translateX(5px);
-      box-shadow: 0 12px 26px rgba(15, 98, 254, 0.12);
-    }
-
-    .timeline-info {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .timeline-emoji {
-      width: 48px;
-      height: 48px;
-      display: grid;
-      place-items: center;
-      border-radius: 16px;
-      background: #edf5ff;
-      font-size: 1.45rem;
-    }
-
-    .timeline-card h4 {
-      margin-bottom: 4px;
-      color: #111827;
-    }
-
-    .timeline-card p {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .duration {
-      background: #f3f4f6;
-      color: var(--muted);
-      padding: 8px 11px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 850;
-      white-space: nowrap;
-    }
-
-    /* To-Do List Styles */
-    .todo-section {
-      display: grid;
-      gap: 12px;
-    }
-
-    .todo-input-container {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .todo-input {
-      flex: 1;
-      padding: 14px 18px;
+    .form-group input,
+    .form-group select {
+      padding: 12px 16px;
       border: 2px solid var(--border);
-      border-radius: 14px;
+      border-radius: 12px;
       font-size: 1rem;
       font-family: inherit;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
     }
 
-    .todo-input:focus {
+    .form-group input:focus,
+    .form-group select:focus {
       outline: none;
       border-color: var(--blue);
       box-shadow: 0 0 0 3px rgba(15, 98, 254, 0.1);
     }
 
-    .add-todo-btn {
+    .add-task-btn {
       padding: 14px 24px;
       background: var(--blue);
       color: white;
       border: none;
-      border-radius: 14px;
+      border-radius: 12px;
       font-weight: 700;
+      font-size: 1rem;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
+      margin-top: 8px;
     }
 
-    .add-todo-btn:hover {
+    .add-task-btn:hover {
       background: var(--blue-dark);
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(15, 98, 254, 0.3);
     }
 
-    .todo-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      transition: all 0.2s ease;
-    }
-
-    .todo-item:hover {
-      box-shadow: 0 4px 12px rgba(17, 24, 39, 0.08);
-      transform: translateX(4px);
-    }
-
-    .todo-checkbox {
-      width: 22px;
-      height: 22px;
-      cursor: pointer;
-      accent-color: var(--blue);
-    }
-
-    .todo-content {
-      flex: 1;
+    /* Task List */
+    .task-list {
+      margin-top: 24px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 12px;
+      max-height: 400px;
+      overflow-y: auto;
     }
 
-    .todo-text {
+    .task-item {
+      padding: 16px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .task-item:hover {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .task-item.scheduled {
+      background: #f0fdf4;
+      border-color: var(--green);
+    }
+
+    .task-info {
+      flex: 1;
+    }
+
+    .task-name {
       font-weight: 600;
-      color: var(--text);
+      margin-bottom: 4px;
+      color: var(--navy);
     }
 
-    .todo-item.completed .todo-text {
-      text-decoration: line-through;
-      color: var(--muted);
-    }
-
-    .todo-time {
+    .task-meta {
       font-size: 0.85rem;
       color: var(--muted);
-    }
-
-    .todo-actions {
       display: flex;
-      gap: 8px;
+      gap: 12px;
     }
 
-    .schedule-btn,
     .delete-btn {
       padding: 8px 12px;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .schedule-btn {
-      background: #edf5ff;
-      color: var(--blue);
-    }
-
-    .schedule-btn:hover {
-      background: var(--blue);
-      color: white;
-    }
-
-    .schedule-btn.scheduled {
-      background: var(--green);
-      color: white;
-    }
-
-    .delete-btn {
       background: #fee;
       color: var(--red);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
     }
 
     .delete-btn:hover {
@@ -687,661 +222,616 @@
       color: white;
     }
 
-    .footer {
-      text-align: center;
-      padding: 24px;
-      border-radius: 24px;
-      background: #081a3a;
+    .schedule-btn {
+      padding: 14px 32px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
       color: white;
-      line-height: 1.65;
-      margin-top: 22px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 16px;
+      width: 100%;
     }
 
-    .footer strong {
-      color: #a6c8ff;
+    .schedule-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(15, 98, 254, 0.3);
     }
 
-    .fade-in {
-      animation: fadeIn 0.45s ease both;
+    .schedule-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
     }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    /* Calendar */
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
     }
 
-    @media (max-width: 1040px) {
-      .hero,
-      .grid-main {
+    .calendar-nav {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      background: var(--blue-light);
+      color: var(--blue);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: var(--blue);
+      color: white;
+    }
+
+    .current-month {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--navy);
+      min-width: 200px;
+      text-align: center;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .day-header {
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--muted);
+      padding: 12px 0;
+    }
+
+    .day-cell {
+      min-height: 120px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .day-cell:hover {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .day-cell.other-month {
+      opacity: 0.3;
+    }
+
+    .day-cell.today {
+      background: var(--blue-light);
+      border-color: var(--blue);
+    }
+
+    .day-number {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: var(--navy);
+    }
+
+    .day-events {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .event-block {
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .event-block:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .event-scheduled {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .event-existing {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .stat-card {
+      padding: 20px;
+      background: linear-gradient(135deg, #f9fafb, white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--blue);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .demo-banner {
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .demo-banner button {
+      padding: 10px 20px;
+      background: white;
+      color: var(--blue);
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .demo-banner button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 1200px) {
+      .main-grid {
         grid-template-columns: 1fr;
       }
-
-      .question-grid,
-      .metrics-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
     }
 
-    @media (max-width: 720px) {
-      body {
-        padding: 12px;
+    @media (max-width: 768px) {
+      .calendar-grid {
+        gap: 4px;
       }
 
-      .navbar {
-        flex-direction: column;
-        gap: 16px;
+      .day-cell {
+        min-height: 80px;
+        padding: 4px;
       }
 
-      .nav-links {
-        gap: 14px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .hero-card,
-      .section,
-      .timeline-content {
-        padding: 22px;
-      }
-
-      .question-grid,
-      .metrics-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .timeline-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar {
-        display: none;
-      }
-
-      .timeline-item {
-        grid-template-columns: 1fr;
-        gap: 6px;
-      }
-
-      .timeline-time {
-        padding-top: 0;
-      }
-
-      .timeline-card {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .todo-input-container {
-        flex-direction: column;
+      .event-block {
+        font-size: 0.65rem;
+        padding: 4px 6px;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <nav class="navbar">
-      <div class="logo">
-        <div class="logo-icon">✦</div>
-        <span>LifePilot</span>
-      </div>
-      <div class="nav-links">
-        <a href="#" class="active" onclick="scrollToSection('hero')">Home</a>
-        <a href="#planner" onclick="scrollToSection('planner')">Planner</a>
-        <a href="#todos" onclick="scrollToSection('todos')">To-Dos</a>
-        <a href="#calendar" onclick="scrollToSection('calendar')">Calendar</a>
-      </div>
-      <button class="nav-btn" onclick="scrollToSection('planner')">Get Started</button>
-    </nav>
-
-    <section class="hero" id="hero">
-      <div class="hero-card fade-in">
-        <div class="tag">✨ AI-powered daily planning</div>
-        <h1>Your day.<br />Planned smarter.</h1>
-        <p>
-          LifePilot helps you make better daily decisions with personalized suggestions based on your mood, time, and goals.
-        </p>
-        <div class="hero-actions">
-          <button class="primary-btn" onclick="scrollToSection('planner')">Start Your Day</button>
-          <button class="secondary-btn" onclick="generatePlan()">▶ See Demo</button>
-        </div>
-      </div>
-
-      <div class="phone-card fade-in">
-        <div class="phone">
-          <div class="phone-notch"></div>
-          <h3>Good morning! ☀️</h3>
-          <p>Ready to plan your best day?</p>
-
-          <div class="mini-card">
-            <p><strong>Life Ease Score</strong></p>
-            <div class="score-row">
-              <div><span class="score-number" id="phoneScore">82</span><span> /100</span></div>
-              <div class="ring"></div>
-            </div>
-          </div>
-
-          <div class="mini-card">
-            <p><strong>Today's Focus</strong></p>
-            <p id="phoneFocus">Finish project presentation</p>
-          </div>
-
-          <div class="mini-card">
-            <p><strong>Current Mood</strong></p>
-            <p id="phoneMood">😟 Stressed</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="grid-main" id="planner">
-      <div class="section fade-in">
-        <div class="section-title">
-          <div>
-            <h2>Tell us about your day</h2>
-            <p class="subtitle">Choose your mood, goal, and available time.</p>
-          </div>
-        </div>
-
-        <div class="question-grid">
-          <div class="question-card active" id="moodCard">
-            <h4>How do you feel?</h4>
-            <div class="big-icon" id="moodIcon">🙂</div>
-            <select id="mood" onchange="updateSelections()">
-              <option value="Energetic">Energetic</option>
-              <option value="Tired">Tired</option>
-              <option value="Stressed" selected>Stressed</option>
-              <option value="Unmotivated">Unmotivated</option>
-            </select>
-          </div>
-
-          <div class="question-card">
-            <h4>What's your main goal?</h4>
-            <div class="big-icon" id="goalIcon">💼</div>
-            <select id="goal" onchange="updateSelections()">
-              <option value="Work" selected>Work</option>
-              <option value="Study">Study</option>
-              <option value="Health">Health</option>
-              <option value="Social">Social</option>
-            </select>
-          </div>
-
-          <div class="question-card">
-            <h4>How much time?</h4>
-            <div class="big-icon">⏳</div>
-            <select id="time" onchange="updateSelections()">
-              <option value="15 min">15 min</option>
-              <option value="1 hour" selected>1 hour</option>
-              <option value="Half day">Half day</option>
-              <option value="Full day">Full day</option>
-            </select>
-          </div>
-        </div>
-
-        <button class="primary-btn generate-btn" onclick="generatePlan()">Generate My Plan</button>
-      </div>
-
-      <div class="metrics-grid fade-in">
-        <div class="metric-card">
-          <div class="metric-top">
-            <span>Life Ease Score</span>
-            <span class="metric-icon">📈</span>
-          </div>
-          <div class="metric-value" id="scoreValue">82/100</div>
-          <p id="scoreText">You're on a good track.</p>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-top">
-            <span>Energy Level</span>
-            <span class="metric-icon">⚡</span>
-          </div>
-          <div class="metric-value" id="energyValue">Medium</div>
-          <p id="energyText">Balanced pace recommended.</p>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-top">
-            <span>Tasks Today</span>
-            <span class="metric-icon">✅</span>
-          </div>
-          <div class="metric-value" id="tasksValue">0</div>
-          <p id="tasksText">Add tasks to get started.</p>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-top">
-            <span>AI Insight</span>
-            <span class="metric-icon">✨</span>
-          </div>
-          <div class="metric-value" id="insightTitle">Light plan</div>
-          <p id="insightText">Your plan prioritizes light progress over intensity.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section fade-in" id="todos">
-      <div class="section-title">
-        <div>
-          <h2>Your To-Do List 📝</h2>
-          <p class="subtitle">Add tasks and schedule them to your calendar.</p>
-        </div>
-      </div>
-
-      <div class="todo-input-container">
-        <input 
-          type="text" 
-          id="todoInput" 
-          class="todo-input" 
-          placeholder="What do you need to do today?"
-          onkeypress="handleTodoKeyPress(event)"
-        />
-        <button class="add-todo-btn" onclick="addTodo()">+ Add Task</button>
-      </div>
-
-      <div class="todo-section" id="todoList">
-        <!-- To-do items will be added here dynamically -->
-      </div>
-    </section>
-
-    <section class="section timeline-layout fade-in" id="calendar">
-      <aside class="sidebar">
+    <div class="header">
+      <div>
         <div class="logo">
-          <div class="logo-icon">✦</div>
+          <div class="logo-icon">📅</div>
           <span>LifePilot</span>
         </div>
-        <div class="side-menu">
-          <div class="active">📅 Today</div>
-          <div>✅ Plan</div>
-          <div>🧠 Insights</div>
-          <div>👤 Profile</div>
-          <div>⚙️ Settings</div>
-        </div>
-      </aside>
-
-      <div class="timeline-content">
-        <div class="section-title">
-          <div>
-            <h2>Your Schedule for Today ✨</h2>
-            <p class="subtitle">A personalized timeline to help you make meaningful progress.</p>
-          </div>
-          <button class="primary-btn" onclick="exportCalendar()">📥 Export Calendar</button>
-        </div>
-        <div class="timeline-list" id="timelineList"></div>
+        <div class="tagline">Smart Task Scheduler - Add tasks, set deadlines, auto-schedule</div>
       </div>
-    </section>
+    </div>
 
+    <div class="demo-banner">
+      <div>
+        <strong>👋 Try the demo!</strong> Click "Load Sample Tasks" to see how automatic scheduling works
+      </div>
+      <button onclick="loadSampleTasks()">Load Sample Tasks</button>
+    </div>
+
+    <div class="main-grid">
+      <!-- Left Panel: Task Input -->
+      <div>
+        <div class="card">
+          <h2>Add Task</h2>
+          <p class="subtitle">Enter task details and we'll find the best time slot</p>
+
+          <form class="task-form" onsubmit="addTask(event)">
+            <div class="form-group">
+              <label for="taskName">Task Name *</label>
+              <input 
+                type="text" 
+                id="taskName" 
+                placeholder="e.g., Finish project report"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="taskDuration">Duration (minutes) *</label>
+              <input 
+                type="number" 
+                id="taskDuration" 
+                placeholder="e.g., 60"
+                min="15"
+                step="15"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="taskDeadline">Deadline *</label>
+              <input 
+                type="date" 
+                id="taskDeadline" 
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="taskPriority">Priority</label>
+              <select id="taskPriority">
+                <option value="5">Medium</option>
+                <option value="8">High</option>
+                <option value="10">Critical</option>
+                <option value="3">Low</option>
+              </select>
+            </div>
+
+            <button type="submit" class="add-task-btn">+ Add Task</button>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+          <h2>Task Queue</h2>
+          <p class="subtitle">Tasks waiting to be scheduled</p>
+          
+          <div class="task-list" id="taskList">
+            <p style="text-align: center; color: var(--muted); padding: 20px;">No tasks yet. Add your first task above!</p>
+          </div>
+
+          <button class="schedule-btn" onclick="scheduleAllTasks()" id="scheduleBtn" disabled>
+            🚀 Auto-Schedule All Tasks
+          </button>
+
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-value" id="totalTasks">0</div>
+              <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="scheduledTasks">0</div>
+              <div class="stat-label">Scheduled</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="pendingTasks">0</div>
+              <div class="stat-label">Pending</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel: Calendar -->
+      <div class="card">
+        <div class="calendar-header">
+          <h2>Calendar</h2>
+          <div class="calendar-nav">
+            <button class="nav-btn" onclick="previousMonth()">← Prev</button>
+            <div class="current-month" id="currentMonth"></div>
+            <button class="nav-btn" onclick="nextMonth()">Next →</button>
+          </div>
+        </div>
+
+        <div class="calendar-grid" id="calendar"></div>
+      </div>
+    </div>
   </div>
 
   <script src="calendar-scheduler.js"></script>
   <script>
-    let currentPlan = [];
-    let todos = [];
-    let todoIdCounter = 1;
+    let tasks = [];
+    let scheduledEvents = [];
+    let taskIdCounter = 1;
+    let currentDate = new Date();
     const scheduler = new CalendarScheduler();
 
-    const moodIcons = {
-      Energetic: "⚡",
-      Tired: "😴",
-      Stressed: "😟",
-      Unmotivated: "🧠"
-    };
+    // Set working hours (9 AM - 6 PM)
+    scheduler.setWorkingHours(9, 18);
 
-    const goalIcons = {
-      Work: "💼",
-      Study: "📚",
-      Health: "❤️",
-      Social: "👥"
-    };
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'];
 
-    const plans = {
-      Work: [
-        { time: "09:00", title: "Reset Your Mind", desc: "10 min breathing exercise", emoji: "🌿", duration: 10 },
-        { time: "09:15", title: "Focus Session", desc: "Finish one important work task", emoji: "🎯", duration: 25 },
-        { time: "09:45", title: "Quick Break", desc: "Take a short walk", emoji: "🚶", duration: 15 },
-        { time: "10:00", title: "Project Work", desc: "Continue with main project", emoji: "💼", duration: 30 },
-        { time: "10:30", title: "Review Progress", desc: "Check what is done and what can wait", emoji: "✅", duration: 15 }
-      ],
-      Study: [
-        { time: "09:00", title: "Warm-up Review", desc: "Read your notes for 10 minutes", emoji: "📖", duration: 10 },
-        { time: "09:15", title: "Deep Study Block", desc: "Focus on one difficult topic", emoji: "🧠", duration: 30 },
-        { time: "09:50", title: "Mini Quiz", desc: "Test yourself with 5 questions", emoji: "❓", duration: 15 },
-        { time: "10:10", title: "Break", desc: "Move away from the screen", emoji: "🚶", duration: 10 },
-        { time: "10:25", title: "Summary", desc: "Write three key takeaways", emoji: "✍️", duration: 15 }
-      ],
-      Health: [
-        { time: "09:00", title: "Hydration", desc: "Drink water and stretch", emoji: "💧", duration: 10 },
-        { time: "09:15", title: "Light Movement", desc: "Walk or do a short workout", emoji: "🏃", duration: 25 },
-        { time: "09:45", title: "Healthy Meal", desc: "Choose a simple balanced meal", emoji: "🥗", duration: 30 },
-        { time: "10:20", title: "Mental Reset", desc: "Five minutes of calm breathing", emoji: "🧘", duration: 5 }
-      ],
-      Social: [
-        { time: "09:00", title: "Check In", desc: "Message one person you care about", emoji: "💬", duration: 10 },
-        { time: "09:15", title: "Plan a Small Meet", desc: "Choose a low-pressure social activity", emoji: "👥", duration: 20 },
-        { time: "09:40", title: "Personal Time", desc: "Recharge before social interaction", emoji: "🌿", duration: 15 },
-        { time: "10:00", title: "Connect", desc: "Call, meet or send a thoughtful message", emoji: "☎️", duration: 20 }
-      ]
-    };
-
-    document.addEventListener("DOMContentLoaded", function () {
-      updateSelections();
-      generatePlan();
-      loadTodos();
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set default deadline to tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('taskDeadline').valueAsDate = tomorrow;
+      
+      renderCalendar();
+      updateStats();
     });
 
-    function scrollToSection(sectionId) {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
+    function addTask(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById('taskName').value.trim();
+      const duration = parseInt(document.getElementById('taskDuration').value);
+      const deadline = document.getElementById('taskDeadline').value;
+      const priority = parseInt(document.getElementById('taskPriority').value);
+
+      if (!name || !duration || !deadline) return;
+
+      const task = {
+        id: taskIdCounter++,
+        name: name,
+        time: duration,
+        deadline: new Date(deadline + 'T23:59:59'),
+        priority: priority,
+        scheduled: false
+      };
+
+      tasks.push(task);
+      
+      // Reset form
+      document.getElementById('taskName').value = '';
+      document.getElementById('taskDuration').value = '';
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('taskDeadline').valueAsDate = tomorrow;
+      
+      renderTaskList();
+      updateStats();
     }
 
-    function updateSelections() {
-      const mood = document.getElementById("mood").value;
-      const goal = document.getElementById("goal").value;
-
-      document.getElementById("moodIcon").textContent = moodIcons[mood];
-      document.getElementById("goalIcon").textContent = goalIcons[goal];
-      document.getElementById("phoneMood").textContent = moodIcons[mood] + " " + mood;
-
-      let focusText = "Finish project presentation";
-      if (goal === "Study") focusText = "Understand one hard topic";
-      if (goal === "Health") focusText = "Protect your energy";
-      if (goal === "Social") focusText = "Connect with someone";
-      document.getElementById("phoneFocus").textContent = focusText;
-
-      updateMetrics(mood, goal);
+    function deleteTask(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      scheduledEvents = scheduledEvents.filter(e => e.taskId !== id);
+      renderTaskList();
+      renderCalendar();
+      updateStats();
     }
 
-    function updateMetrics(mood, goal) {
-      let score = 82;
-      let energy = "Medium";
-      let insightTitle = "Light plan";
-      let insightText = "Your plan prioritizes light progress over intensity.";
-
-      if (mood === "Energetic") {
-        score = 91;
-        energy = "High";
-        insightTitle = "Strong momentum";
-        insightText = "You can handle a focused and productive plan today.";
-      } else if (mood === "Tired") {
-        score = 74;
-        energy = "Low";
-        insightTitle = "Recovery first";
-        insightText = "Your plan includes smaller steps and more breaks.";
-      } else if (mood === "Unmotivated") {
-        score = 69;
-        energy = "Low";
-        insightTitle = "Tiny wins";
-        insightText = "The best strategy is to start with one very easy task.";
+    function renderTaskList() {
+      const taskList = document.getElementById('taskList');
+      const scheduleBtn = document.getElementById('scheduleBtn');
+      
+      const unscheduledTasks = tasks.filter(t => !t.scheduled);
+      
+      if (unscheduledTasks.length === 0) {
+        taskList.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 20px;">All tasks scheduled! 🎉</p>';
+        scheduleBtn.disabled = true;
+        return;
       }
 
-      document.getElementById("scoreValue").textContent = score + "/100";
-      document.getElementById("phoneScore").textContent = score;
-      document.getElementById("energyValue").textContent = energy;
-      document.getElementById("insightTitle").textContent = insightTitle;
-      document.getElementById("insightText").textContent = insightText;
+      scheduleBtn.disabled = false;
 
-      if (score >= 85) {
-        document.getElementById("scoreText").textContent = "You're ready for a productive day.";
-      } else if (score >= 75) {
-        document.getElementById("scoreText").textContent = "You're on a good track.";
-      } else {
-        document.getElementById("scoreText").textContent = "Keep it simple and gentle today.";
-      }
-
-      updateTasksMetric();
-    }
-
-    function generatePlan() {
-      const goal = document.getElementById("goal").value;
-      const mood = document.getElementById("mood").value;
-      const time = document.getElementById("time").value;
-
-      currentPlan = [...plans[goal]];
-
-      if (mood === "Tired" || mood === "Unmotivated") {
-        currentPlan.unshift({
-          time: "08:50",
-          title: "Gentle Start",
-          desc: "Drink water and do one tiny action",
-          emoji: "💧",
-          duration: 5
-        });
-      }
-
-      if (time === "15 min") {
-        currentPlan = currentPlan.slice(0, 2);
-      } else if (time === "1 hour") {
-        currentPlan = currentPlan.slice(0, 4);
-      }
-
-      renderTimeline();
-      updateSelections();
-    }
-
-    function renderTimeline() {
-      const timelineList = document.getElementById("timelineList");
-      timelineList.innerHTML = currentPlan.map(function (item) {
+      taskList.innerHTML = unscheduledTasks.map(task => {
+        const deadlineStr = task.deadline.toLocaleDateString();
+        const priorityLabel = task.priority >= 8 ? 'High' : task.priority >= 5 ? 'Medium' : 'Low';
+        
         return `
-          <div class="timeline-item">
-            <div class="timeline-time">${item.time}</div>
-            <div class="timeline-card">
-              <div class="timeline-info">
-                <div class="timeline-emoji">${item.emoji}</div>
-                <div>
-                  <h4>${item.title}</h4>
-                  <p>${item.desc}</p>
-                </div>
+          <div class="task-item ${task.scheduled ? 'scheduled' : ''}">
+            <div class="task-info">
+              <div class="task-name">${task.name}</div>
+              <div class="task-meta">
+                <span>⏱️ ${task.time} min</span>
+                <span>📅 ${deadlineStr}</span>
+                <span>🎯 ${priorityLabel}</span>
               </div>
-              <span class="duration">${item.duration} min</span>
             </div>
+            <button class="delete-btn" onclick="deleteTask(${task.id})">🗑️</button>
           </div>
         `;
-      }).join("");
+      }).join('');
     }
 
-    // To-Do List Functions
-    function handleTodoKeyPress(event) {
-      if (event.key === 'Enter') {
-        addTodo();
-      }
-    }
-
-    function addTodo() {
-      const input = document.getElementById("todoInput");
-      const text = input.value.trim();
+    function scheduleAllTasks() {
+      const unscheduledTasks = tasks.filter(t => !t.scheduled);
       
-      if (text === "") return;
-
-      const todo = {
-        id: todoIdCounter++,
-        text: text,
-        completed: false,
-        scheduled: false,
-        createdAt: new Date().toISOString()
-      };
-
-      todos.push(todo);
-      input.value = "";
-      saveTodos();
-      renderTodos();
-      updateTasksMetric();
-    }
-
-    function toggleTodo(id) {
-      const todo = todos.find(t => t.id === id);
-      if (todo) {
-        todo.completed = !todo.completed;
-        saveTodos();
-        renderTodos();
-        updateTasksMetric();
+      if (unscheduledTasks.length === 0) {
+        alert('No tasks to schedule!');
+        return;
       }
-    }
 
-    function deleteTodo(id) {
-      todos = todos.filter(t => t.id !== id);
-      saveTodos();
-      renderTodos();
-      updateTasksMetric();
-    }
+      // Use the scheduler algorithm
+      const result = scheduler.scheduleTasksPriority(
+        unscheduledTasks,
+        scheduledEvents,
+        new Date(),
+        30 // Look ahead 30 days
+      );
 
-    function scheduleTodo(id) {
-      const todo = todos.find(t => t.id === id);
-      if (!todo) return;
-
-      // Create a task object for the scheduler
-      const task = {
-        id: todo.id,
-        name: todo.text,
-        time: 30, // Default 30 minutes
-        priority: 5
-      };
-
-      // Get existing calendar events from currentPlan
-      const existingEvents = currentPlan.map(item => {
-        const [hours, minutes] = item.time.split(':');
-        const start = new Date();
-        start.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-        const end = new Date(start);
-        end.setMinutes(end.getMinutes() + item.duration);
-        
-        return {
-          start: start,
-          end: end,
-          summary: item.title
-        };
-      });
-
-      // Schedule the task
-      const result = scheduler.scheduleTasksFirstFit([task], existingEvents);
-      
       if (result.scheduled.length > 0) {
-        const scheduledTask = result.scheduled[0];
-        const timeStr = scheduledTask.scheduledStart.toLocaleTimeString('en-US', { 
-          hour: '2-digit', 
-          minute: '2-digit',
-          hour12: false 
+        // Add scheduled tasks to events
+        result.scheduled.forEach(scheduledTask => {
+          scheduledEvents.push({
+            taskId: scheduledTask.id,
+            start: scheduledTask.scheduledStart,
+            end: scheduledTask.scheduledEnd,
+            summary: scheduledTask.name,
+            type: 'scheduled'
+          });
+
+          // Mark task as scheduled
+          const task = tasks.find(t => t.id === scheduledTask.id);
+          if (task) task.scheduled = true;
         });
 
-        // Add to current plan
-        currentPlan.push({
-          time: timeStr,
-          title: todo.text,
-          desc: "Scheduled task",
-          emoji: "✅",
-          duration: task.time
-        });
-
-        // Sort by time
-        currentPlan.sort((a, b) => a.time.localeCompare(b.time));
-
-        todo.scheduled = true;
-        saveTodos();
-        renderTodos();
-        renderTimeline();
+        alert(`✅ Successfully scheduled ${result.scheduled.length} task(s)!`);
         
-        alert(`Task scheduled at ${timeStr}!`);
+        if (result.unscheduled.length > 0) {
+          alert(`⚠️ Could not schedule ${result.unscheduled.length} task(s). Try adjusting deadlines or durations.`);
+        }
       } else {
-        alert("Could not find a suitable time slot. Try adjusting your schedule.");
+        alert('❌ Could not schedule any tasks. Try adjusting deadlines or adding more available time.');
       }
+
+      renderTaskList();
+      renderCalendar();
+      updateStats();
     }
 
-    function renderTodos() {
-      const todoList = document.getElementById("todoList");
+    function renderCalendar() {
+      const calendar = document.getElementById('calendar');
+      const monthLabel = document.getElementById('currentMonth');
       
-      if (todos.length === 0) {
-        todoList.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 20px;">No tasks yet. Add your first task above!</p>';
-        return;
-      }
-
-      todoList.innerHTML = todos.map(todo => `
-        <div class="todo-item ${todo.completed ? 'completed' : ''}">
-          <input 
-            type="checkbox" 
-            class="todo-checkbox" 
-            ${todo.completed ? 'checked' : ''}
-            onchange="toggleTodo(${todo.id})"
-          />
-          <div class="todo-content">
-            <div class="todo-text">${todo.text}</div>
-            <div class="todo-time">Added ${new Date(todo.createdAt).toLocaleString()}</div>
-          </div>
-          <div class="todo-actions">
-            <button 
-              class="schedule-btn ${todo.scheduled ? 'scheduled' : ''}" 
-              onclick="scheduleTodo(${todo.id})"
-              ${todo.completed || todo.scheduled ? 'disabled' : ''}
-            >
-              ${todo.scheduled ? '✓ Scheduled' : '📅 Schedule'}
-            </button>
-            <button class="delete-btn" onclick="deleteTodo(${todo.id})">🗑️</button>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    function saveTodos() {
-      localStorage.setItem('lifepilot-todos', JSON.stringify(todos));
-    }
-
-    function loadTodos() {
-      const saved = localStorage.getItem('lifepilot-todos');
-      if (saved) {
-        todos = JSON.parse(saved);
-        todoIdCounter = Math.max(...todos.map(t => t.id), 0) + 1;
-        renderTodos();
-      }
-    }
-
-    function updateTasksMetric() {
-      const totalTasks = todos.length;
-      const completedTasks = todos.filter(t => t.completed).length;
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
       
-      document.getElementById("tasksValue").textContent = `${completedTasks}/${totalTasks}`;
+      monthLabel.textContent = `${monthNames[month]} ${year}`;
       
-      if (totalTasks === 0) {
-        document.getElementById("tasksText").textContent = "Add tasks to get started.";
-      } else if (completedTasks === totalTasks) {
-        document.getElementById("tasksText").textContent = "All tasks completed! 🎉";
-      } else {
-        document.getElementById("tasksText").textContent = `${totalTasks - completedTasks} tasks remaining.`;
-      }
-    }
-
-    function exportCalendar() {
-      if (currentPlan.length === 0) {
-        alert("No schedule to export. Generate a plan first!");
-        return;
-      }
-
-      // Convert current plan to scheduled tasks format
-      const scheduledTasks = currentPlan.map((item, index) => {
-        const [hours, minutes] = item.time.split(':');
-        const start = new Date();
-        start.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-        const end = new Date(start);
-        end.setMinutes(end.getMinutes() + item.duration);
-
-        return {
-          id: index,
-          name: item.title,
-          description: item.desc,
-          scheduledStart: start,
-          scheduledEnd: end,
-          uid: `lifepilot-${index}-${Date.now()}`
-        };
+      // Get first day of month and number of days
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      const startingDayOfWeek = firstDay.getDay();
+      
+      // Get previous month's last days
+      const prevMonthLastDay = new Date(year, month, 0).getDate();
+      
+      let html = '';
+      
+      // Day headers
+      dayNames.forEach(day => {
+        html += `<div class="day-header">${day}</div>`;
       });
-
-      const icsContent = scheduler.exportToICalendar(scheduledTasks);
-      scheduler.downloadICS(icsContent, 'lifepilot-schedule.ics');
       
-      alert("Calendar exported successfully! 📅");
+      // Previous month's days
+      for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+        const day = prevMonthLastDay - i;
+        html += `<div class="day-cell other-month"><div class="day-number">${day}</div></div>`;
+      }
+      
+      // Current month's days
+      const today = new Date();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const isToday = date.toDateString() === today.toDateString();
+        
+        // Get events for this day
+        const dayEvents = scheduledEvents.filter(event => {
+          const eventDate = new Date(event.start);
+          return eventDate.toDateString() === date.toDateString();
+        });
+        
+        let eventsHtml = '';
+        dayEvents.forEach(event => {
+          const timeStr = new Date(event.start).toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+          });
+          eventsHtml += `<div class="event-block event-${event.type}" title="${event.summary} at ${timeStr}">${timeStr} ${event.summary}</div>`;
+        });
+        
+        html += `
+          <div class="day-cell ${isToday ? 'today' : ''}">
+            <div class="day-number">${day}</div>
+            <div class="day-events">${eventsHtml}</div>
+          </div>
+        `;
+      }
+      
+      // Next month's days to fill the grid
+      const totalCells = Math.ceil((startingDayOfWeek + daysInMonth) / 7) * 7;
+      const remainingCells = totalCells - (startingDayOfWeek + daysInMonth);
+      for (let day = 1; day <= remainingCells; day++) {
+        html += `<div class="day-cell other-month"><div class="day-number">${day}</div></div>`;
+      }
+      
+      calendar.innerHTML = html;
+    }
+
+    function previousMonth() {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    }
+
+    function nextMonth() {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    }
+
+    function updateStats() {
+      const total = tasks.length;
+      const scheduled = tasks.filter(t => t.scheduled).length;
+      const pending = total - scheduled;
+      
+      document.getElementById('totalTasks').textContent = total;
+      document.getElementById('scheduledTasks').textContent = scheduled;
+      document.getElementById('pendingTasks').textContent = pending;
+    }
+
+    function loadSampleTasks() {
+      // Clear existing tasks
+      tasks = [];
+      scheduledEvents = [];
+      taskIdCounter = 1;
+      
+      // Add sample tasks
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const nextWeek = new Date(today);
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      
+      const sampleTasks = [
+        { name: 'Team Meeting Prep', time: 30, deadline: tomorrow, priority: 8 },
+        { name: 'Write Project Report', time: 120, deadline: nextWeek, priority: 10 },
+        { name: 'Code Review', time: 45, deadline: tomorrow, priority: 5 },
+        { name: 'Client Email Response', time: 20, deadline: tomorrow, priority: 8 },
+        { name: 'Update Documentation', time: 60, deadline: nextWeek, priority: 5 },
+        { name: 'Bug Fixes', time: 90, deadline: nextWeek, priority: 8 }
+      ];
+      
+      sampleTasks.forEach(task => {
+        tasks.push({
+          id: taskIdCounter++,
+          name: task.name,
+          time: task.time,
+          deadline: new Date(task.deadline.toDateString() + ' 23:59:59'),
+          priority: task.priority,
+          scheduled: false
+        });
+      });
+      
+      renderTaskList();
+      updateStats();
+      
+      alert('✅ Sample tasks loaded! Click "Auto-Schedule All Tasks" to see the magic happen.');
     }
   </script>
 </body>

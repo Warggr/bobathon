@@ -316,6 +316,7 @@
   </div>
 
   <script src="calendar-scheduler.js"></script>
+  <script src="shared-utils.js"></script>
   <script>
     let currentPlan = [];
     let manualTasks = [];
@@ -610,7 +611,7 @@
           hour12: false
         });
         
-        block.innerHTML = `${task.emoji} ${task.name} <span>${startTime}</span>`;
+        block.innerHTML = `${task.emoji || "📋"} ${task.name} <span>${startTime}</span>`;
         scheduleList.appendChild(block);
       });
       
@@ -628,7 +629,7 @@
           <div class="timeline-time">Suggested</div>
           <div class="timeline-card">
             <div class="timeline-info">
-              <div class="timeline-emoji">${task.emoji}</div>
+              <div class="timeline-emoji">${task.emoji || "📋"}</div>
               <div>
                 <h4>${task.name}</h4>
                 <p>${task.description}</p>
